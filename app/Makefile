@@ -1,5 +1,5 @@
 run:
-	meteor -p 3113 --settings settings.json
+	meteor -p 3100 --settings settings.json
 
 install:
 	git submodule init
