@@ -25,17 +25,14 @@ make update
 
 ### Populating the database
 
-After doing `make run` run:
+While the app is running:
 
 ```
-make data
-cd ../tools/grits-net-consume/
-virtualenv grits-net-consume-env
-source grits-net-consume-env/bin/activate
-pip install -r requirements.txt
-MONGO_HOST=localhost:3101 python grits_consume.py -d meteor --type DiioAirport tests/data/MiExpressAllAirportCodes.tsv
-MONGO_HOST=localhost:3101 python grits_consume.py -d meteor --type FlightGlobal tests/data/GlobalDirectsSample_20150728.csv
+data/
+make download
+make restore
 ```
+
 
 ### Flushing the database
 
