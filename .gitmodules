@@ -7,6 +7,3 @@
 [submodule "app/packages/flirt-sidebar"]
 	path = app/packages/flirt-sidebar
 	url = git@github.com:ecohealthalliance/flirt-sidebar.git
-[submodule "tools/grits-net-consume"]
-	path = tools/grits-net-consume
-	url = git@github.com:ecohealthalliance/grits-net-consume.git
