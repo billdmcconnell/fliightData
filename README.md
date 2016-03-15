@@ -28,7 +28,7 @@ make update
 While the app is running:
 
 ```
-data/
+cd data/
 make download
 make restore
 ```
