@@ -6,7 +6,7 @@ Network analysis tool that enables users to examine flight networks to identify 
 
 ```
 cd app/
-make install
+make install && make update
 ```
 
 ### Running
