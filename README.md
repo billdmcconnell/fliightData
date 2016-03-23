@@ -1,6 +1,6 @@
 # FLIRT
 
-Network analysis tool that enables users to examine flight networks to identify where infected travelers and contaminated goods are likely to travel too. Connectedness between airports using passenger, cargo, and network data is calculated.
+Network analysis tool that enables users to examine flight networks to identify where infected travelers and contaminated goods are likely to travel to. Connectedness between airports using passenger, cargo, and network data is calculated.
 
 ### Installation
 
