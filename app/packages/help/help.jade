@@ -7,3 +7,110 @@ template(name="help")
             span(aria-hidden='true') ×
           h4.modal-title FLIRT Help
         .modal-body
+          p FLIRT is a network analysis tool that enables detailed examination of flight networks. 
+          p 
+            | By simply selecting an airport and date range, 
+            | FLIRT renders a visualization of all departing flights 
+            | and compiles detailed, downloadable tabular data. 
+            | Clear analysis of the potential paths 
+            | of travelers makes FLIRT an essential tool in predicting 
+            | the spread of infectious diseases. 
+
+
+          a.app-mode--link#basic
+            h2 Air Traffic (Basic Analysis):
+          .app-mode--content
+            p
+              |In this mode, users can select at least one origination airport (node)
+              | and a date range. Based on this information, FLIRT displays non-stop flight paths from a 
+              | selected airport to all possible destinations, ranking destinations by summed seat count.
+
+              .app-mode--instructions
+                h3 Show Air Traffic
+                ul
+                  li Click "Show Air Traffic"
+                  li 
+                    | Search for and select at least one origination airport. 
+                    | (To select multiple airports simply search for and select another airport)
+                  li Choose the time window of your analysis by selecting a start and end date
+                  li Click the "Show throughput" button to visualize the results
+
+                p To view detailed information about a particular flight, click on the path
+                p 
+                  | To view and download detailed tabular data about of the flights, 
+                  | click on the [image of tabular data icon] icon on the right. 
+                  | Data can be downloaded in various formats including: JSON, CSV, XML and XLSX
+
+          .app-mode
+            h2 Simulation (In-depth Analysis):
+            p In this mode, users can select at least one origination airport (node), a date range, and a maximum number of passengers to consider. FLIRT displays the results of a Monte Carlo(https://en.wikipedia.org/wiki/Monte_Carlo_method) simulation, outputting likely passenger destinations from a specified origin based on previous analysis of common passenger layover and transfer probabilities. 
+            a.show-more-info(data-info='simulation') read more info
+            .extended-info
+              p The simulations mirror real life traveler behavior to give analyst an accurate picture of travel patterns. Flight legs are combined into a single path and visualized on the map. A heatmap layer and rank-ordered list of flights based on the total number of passengers to terminal destinations are generated during the simulation. Details of each simulation are are stored in FLIRT’s backend to facilitate easy repetition and sharing.
+
+            .mode-mapp--instructions
+              h3 Run a simulation
+              ul
+                li Click "Simulation".
+                li 
+                  | Search for and select at least one origination airport.
+                  | (To select multiple airports simply search for and select another airport)
+                li Choose the time window of the simulation by selecting a start and end date.
+                li Choose the total number of passengers to consider in the simulation.
+                li Click "Start Simulation" to watch the visualization render based on your selections.
+                li 
+                  | A progress bar under the "Start Simulation" button and within the Analysis 
+                  | sidebar (accessed by clicking [image of tabular button]) show the percentage 
+                  | of total passengers processed in the simulation.
+                  span.note 
+                    Note: Simulations considering multiple airports and/or higher numbers of passengers will take longer to complete.
+
+              h3 Share a Simulation
+              ul
+                li Simulations are shared by clicking [image of share icon].
+                li Click "copy" to copy the link to your clipboard
+
+              h3 View simulation details and tabular data
+              ul
+                li Click on the [image of tabular data icon] icon on the right. 
+                li Data can be downloaded in various formats including: JSON, CSV, XML and XLSX
+
+          h2 Additional options
+            h3 All Airports Mode
+            p 
+              | In this mode all airports are display on the map. 
+              | Users can select a rectangular region on which to run an analysis. 
+              | All airports found in the region will be combined into a single origination or meta-node. 
+              | The paths originating from the meta-node include all flight paths from each airport in the selected region.
+
+            .instructions
+              h3 Creating a meta-node and showing its throughput
+              ul
+                li Click on the [image of the polygon icon] icon.
+                li Click and drag your cursor on the map to draw a rectangle over the area which you would like to analyze
+                li Once satisfied with your search area, click ‘apply’ to create the meta-node and show the throughput
+
+              p To run a simulation using the meta-node, ensure you are in Simulation mode by clicking "Simulation". The meta-node will appear inside the search box. Then click the "Start Simulation" button.
+
+              span.note Note: Since simulations using meta-nodes may consider a large number of origination airports and/or passengers, processing times will likely be increased. Refer to progress bars for the percentage of passengers simulated.
+
+            h3 Filtration
+            p Reduce the number of flights and/or destination airports displayed on map and in table based on seat counts. 
+            ul
+              li Click on [image of slide icon] icon
+              li Adjust Flight Seat Count
+              li Move the slider handles to the left or right to filter the displayed flight paths based on seat count
+              li Adjust Airport Seat Count
+              li Move the slider handles to the left or right to filter the displayed destination airport nodes based on the total seat count of all incoming flights.
+
+            h3 Map Layers
+            ul
+              li Click on [image of layers icon] icon
+              li Select the type of map you wish to use:
+                ul
+                  li Transportation - Shows roads, names and boundaries 
+                  li Satellite - Shows detailed satellite imagery of terrain
+                  li Hybrid - combination of transportation and satellite
+
+          h2 Help 
+            p To review help again, click the [image of question mark icon] icon 
