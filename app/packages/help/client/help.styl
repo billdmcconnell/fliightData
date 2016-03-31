@@ -1,0 +1,157 @@
+$modal-z-index = 10000
+$primary = rgba(3, 63, 100, 1)
+$secondary = rgba(179, 225, 178, 1)
+$transparent-white = alpha(white, 50%)
+
+menuBorder($color)
+  border-top 1px solid $color
+  border-bottom 1px solid $color
+
+#help-modal
+  z-index $modal-z-index
+  color white
+  h1
+    font-weight 800
+    margin-top 0
+  h2
+    font-size 1.5em
+  h3
+  h4
+    font-size 1.1em
+    font-weight 600
+
+  .logo
+    background url(../../../images/flirt-logo-simple.svg) no-repeat
+    background-size cover
+    height 52px
+    width 58px
+    display inline-block
+  a
+    text-decoration none
+    cursor pointer
+  .fa
+    margin-right 5px
+
+.modal-backdrop
+  z-index $modal-z-index - 10000
+
+.modal-backdrop
+  background white
+  &.in
+    opacity .75
+
+.modal-dialog
+  min-width 70%
+  margin-top 50px
+
+.modal-content
+  border-radius 3px
+  box-shadow 0 5px 15px rgba(0, 0, 0, .2)
+  border 0
+  background rgba(62, 106, 137, .85)
+  .close
+    position absolute
+    right 10px
+    top 10px
+    z-index 1
+    font-size 2.5em
+    cursor pointer
+    color alpha($primary, 90%)
+    opacity 1
+    text-shadow none
+    &:hover
+      color darken(alpha($primary, 100%), 50%)
+
+.modal-body
+  padding-bottom 0
+
+.intro
+  margin-bottom 25px
+
+.mode-selector
+  display flex
+  margin 0 -5px
+  background rgba(80, 115, 140, 1)
+  border-radius 3px
+  a
+    flex 1 1 100%
+    font-size 1em
+    border-right 1px solid $transparent-white
+    color white
+    text-align center
+    padding 10px 15px
+    menuBorder($transparent-white)
+    font-weight 600
+    &:last-of-type
+      border-right 0
+    &.active
+    &.active:hover
+    &:hover
+      background $secondary
+      color $primary
+      menuBorder(@background)
+    &:hover
+      background $primary
+      color white
+    &.featured
+      padding 15px
+      font-size 1.2em
+
+.note
+  display block
+  margin-top 15px
+  &::before
+    display inline-block
+    margin-right 5px
+    content '\f249'
+    font-family 'FontAwesome'
+
+.app-modes
+  background rgba(0, 0, 0, .1)
+  margin 0 -15px
+  padding-bottom 20px
+
+.app-mode
+  display none
+  &.active
+    display block
+    padding 20px 15px 25px 15px
+
+.app-mode-link
+  position relative
+  &.active
+    &::after
+      display block
+      position absolute
+      top 100%
+      left 50%
+      width 0
+      height 0
+      transform translate(-50%, 0)
+      border-color $secondary transparent transparent transparent
+      border-style solid
+      border-width 10px
+      content ''
+
+p a
+.show-more-info
+  display inline
+  color $secondary
+  &:hover
+    color darken($primary, 20%)
+
+p
+li
+  .fa
+    margin-left 3px
+    margin-right 3px
+
+.extended-info
+  margin-top 15px
+
+.inline
+  display inline
+
+.supplemental
+  font-size 95%
+  display block

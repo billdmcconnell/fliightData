@@ -1,0 +1,9 @@
+template(name="help")
+  #help-modal.help.modal.fade(data-backdrop='false' tabindex='-1', role='dialog')
+    .modal-dialog
+      .modal-content
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          i.fa.fa-times-circle(aria-hidden='true')
+
+        .modal-body
+          +Template.dynamic template='userGuide'
