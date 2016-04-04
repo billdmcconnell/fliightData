@@ -1,0 +1,41 @@
+template(name='mainSidebar')
+  #sidebar.sidebar(class="{{#unless sideBarOpen}} off-canvas {{/unless}}")
+    // Nav tabs
+    .sidebar--tab-container
+      ul.sidebar--tabs.list-unstyled
+        li.sidebar--collapse.large(class="{{#unless sideBarOpen}} off-canvas {{/unless}}" role='tab')
+          i.fa.fa-chevron-circle-left
+
+        li.pane-control(class="{{#if tabActive 1}} active {{/if}}" role='tab' data-tab="1")
+          i.fa.fa-search
+
+        li.pane-control(class="{{#if tabActive 3}} active {{/if}}" role="tab" data-tab="3")
+          i.fa.fa-sliders
+
+        li.pane-control(class="{{#if tabActive 4}} active {{/if}}" data-tab="4")
+          i.fa.fa-map-o
+
+        li#sidebar-draw-rectangle-tool(class="{{#if drawing}} active {{/if}}" data-tab="2")
+          i.fa.fa-object-group
+
+        li.help.large.push-to-btm
+          i.fa.fa-question-circle
+
+      .zoom-control
+        button.zoom-control--in.fa.fa-plus.btn.btn-sm
+        button.zoom-control--out.fa.fa-minus.btn.btn-sm
+
+    // Tab panes
+    .sidebar--content
+      h1#flirtTitle FLIRT
+      #mode-toggle.btn-group(data-toggle='buttons')
+        label.btn.btn-mode.active
+          input(type='radio', name='mode', data-mode='{{MODE_EXPLORE}}', autocomplete='off', checked='')
+          |  {{_ "mode.explore" }}
+        label.btn.btn-mode
+          input(type='radio', name='mode', data-mode='{{MODE_ANALYZE}}', autocomplete='off')
+          |  {{_ "mode.analyze" }}
+
+      #sidebar-search.sidebar--pane(class="{{#if paneActive 1}} active {{/if}}")
+      #sidebar-slider.sidebar--pane(class="{{#if paneActive 3}} active {{/if}}")
+      #sidebar-layer.sidebar--pane(class="{{#if paneActive 4}} active {{/if}}")

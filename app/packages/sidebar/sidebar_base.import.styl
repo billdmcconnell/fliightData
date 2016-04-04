@@ -1,0 +1,190 @@
+$sidebar-z-index = 2000
+$tab-font-size = 1.9em
+
+$content-bg = rgba(255, 255, 255, .9)
+$content-padding = 10px 20px
+$move-map-in-xs = true
+
+$sidebar-bg = rgba(255, 255, 255, .4)
+$sidebar-border-width = 3px
+$sidebar-border-radius = 4px
+$sidebar-border = $sidebar-border-width solid transparent
+$move-map-in-xs = false
+$primary = rgba(60, 105, 138, 1)
+$tabs-bg = alpha($primary, 80%)
+
+$inactive-btn = alpha(white, 50%)
+$active-btn = white
+
+
+.sidebar
+  position absolute
+  left 0
+  top 0
+  bottom 0
+  overflow hidden
+  z-index $sidebar-z-index
+  height 100vh
+  width 350px
+  transition .3s
+  background-color $content-bg
+  &.off-canvas
+    transform translate(-300px, 0)
+    li
+      &.active
+        color $inactive-btn
+
+.sidebar--tab-container
+  position absolute
+  top 0
+  bottom 0
+  right 0
+  width 50px
+  background-color $tabs-bg
+  border-left 3px solid darken($tabs-bg, 10%)
+  display flex
+  align-items flex-start
+  justify-content center
+
+.sidebar--tabs
+  display flex
+  min-height 100%
+  flex-direction column
+  border 0
+  > li
+    flex 1 1 0
+    flex-grow 0
+    margin-bottom 20px
+    color $inactive-btn
+    font-size $tab-font-size
+    transition all .2s
+    cursor pointer
+    text-align center
+    &:first-of-type
+      margin-bottom 60px
+    &.large
+      font-size $tab-font-size + .4
+    &.push-to-btm
+      align-self flex-end
+    &.push-to-top
+      align-self flex-start
+    &:hover
+      color alpha(@color, 100%)
+    &.active
+      color alpha(@color, 100%)
+
+.sidebar--content
+  height 100vh
+  margin-right 50px
+
+.sidebar--pane
+  display none
+  &.active
+    display block
+
+.sidebar--pane
+  display none
+  &.active
+    display block
+
+.sidebar--collapse
+  margin-top 20px
+  &.off-canvas
+    i
+      transition .2s ease-in-out
+      transform rotate(180deg)
+
+#mode-toggle
+  display flex
+  border-top 2px solid $primary
+  border-bottom 2px solid $primary
+  label
+    flex 1 0 0
+    border-radius 0
+    color $primary
+    box-shadow none
+    float none
+    white-space normal
+    &:hover
+      background darken(#f9f9f9, 5%)
+    &.active
+      background $primary
+      color white
+    &.focus
+    &:focus
+    &.active:focus
+      outline 0
+
+.token-input
+  font-size 1.2em !important
+
+#flirtTitle
+  background url("../../../images/logo.svg") no-repeat
+  background-size 100%
+  background-position center center
+  width 80%
+  min-height 65px
+  margin 0px
+  text-indent -9999px
+  background-repeat no-repeat
+  padding 30px 0
+  margin-right auto
+  margin-left auto
+
+#flirtTitleText
+  float right
+  text-align left
+  margin-right 95px
+  font-size 70px
+  font-weight bold
+
+.searchBar
+  border-top 0
+  .form-control
+    &:focus
+    &.focus
+      outline 0
+      box-shadow none
+      background $ll-gray
+
+.filter-footer
+  position absolute
+  bottom 0
+  z-index 100
+  width calc(100% - 50px)
+
+.help
+  position absolute
+  bottom 0
+
+.btn-filter
+  width 100%
+  border-radius 2px
+  color $dd-gray
+  background-color #b4e0b4
+  border-color darken(@background-color, 25%)
+  font-weight bold
+  &:hover
+    background darken(@background-color, 15%)
+  &:focus
+    outline 0
+    border-color darken(@background-color, 50%)
+
+.sidebar-footer
+  background alpha($l-gray, 95%)
+  border-top 3px solid $border-gray
+
+.zoom-control
+  position absolute
+  bottom 15px
+  left 60px
+
+.zoom-control--in
+.zoom-control--out
+  color $inactive-btn
+  background $tabs-bg
+  margin-bottom 5px
+  min-height 35px
+  width 35px
+  &:hover
+    color $active-btn

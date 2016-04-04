@@ -20,7 +20,6 @@ ecmascript              # Enable ECMAScript2015+ syntax in app code
 # Dependencies
 grits:grits-net-mapper
 grits:grits-net-meteor
-grits:flirt-sidebar
 
 flirt:core
 flirt:help
