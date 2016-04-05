@@ -17,14 +17,9 @@ Package.onUse(function(api) {
   api.use('reactive-dict', 'client');
   api.use('andrei:tablesorter', 'client');
   api.use('okgrow:analytics', 'client');
-  api.use('eha:sidebar', 'client');
-
+  api.use('flirt-sidebars', 'client');
 
   api.addFiles('moduleSelector.jade', 'client');
-  api.addFiles('tabular_sidebar.jade', 'client');
-  api.addFiles('tabular_sidebar.coffee', 'client');
-  api.addFiles('main_sidebar.jade', 'client');
-  api.addFiles('main_sidebar.coffee', 'client');
   api.addFiles('core.styl', 'client');
   api.addFiles('core.jade', 'client');
   api.addFiles('core.coffee', 'client');

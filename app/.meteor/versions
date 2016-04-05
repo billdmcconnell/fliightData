@@ -36,6 +36,7 @@ ejson@1.0.7
 es5-shim@4.1.14
 fastclick@1.0.7
 flawless:meteor-toastr@1.0.1
+flirt-sidebars@0.0.1
 flirt:core@0.0.1
 flirt:help@0.0.1
 fortawesome:fontawesome@4.5.0
