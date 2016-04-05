@@ -3,11 +3,11 @@
   right 0
   top 0
   bottom 0
-  width 580px
+  width $sidebar-tabular-width
   z-index 2000
   transition transform .3s ease-in-out
   &.off-canvas
-    transform translate(577px, 0)
+    transform translate($sidebar-tabular-width - 3px, 0)
 
 #tableSidebar
   .sidebar--content
@@ -114,7 +114,7 @@
 
 .activeRow
   color white
-  background-color alpha($blue, 90%)
+  background-color alpha($primary, 90%)
   &:hover
     background-color @background-color
     color #333

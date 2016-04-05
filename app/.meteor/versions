@@ -31,12 +31,10 @@ deps@1.0.9
 diff-sequence@1.0.1
 ecmascript@0.1.6
 ecmascript-runtime@0.2.6
-eha:sidebar@0.0.1
 ejson@1.0.7
 es5-shim@4.1.14
 fastclick@1.0.7
 flawless:meteor-toastr@1.0.1
-flirt-sidebars@0.0.1
 flirt:core@0.0.1
 flirt:help@0.0.1
 fortawesome:fontawesome@4.5.0
@@ -90,9 +88,14 @@ reload@1.1.4
 retry@1.0.4
 routepolicy@1.0.6
 session@1.1.1
+sidebar@0.0.1
+sidebar-main@0.0.1
+sidebar-tabular@0.0.1
 spacebars@1.0.7
 spacebars-compiler@1.0.7
 standard-minifiers@1.0.2
+styles-base@0.0.1
+stylus@2.511.1
 templating@1.1.5
 templating-tools@1.0.0
 tracker@1.0.9

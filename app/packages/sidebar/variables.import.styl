@@ -1,22 +1,23 @@
-$fonts = arial, helvetica, sans-serif
-$primary-font = 'Lato'
+if $primary is defined
+  $default = $primary
+else
+  $default = rgba(100, 100, 100, 1)
+  $primary = $default
 
-$body-text = #333333
-$tab-unselected = rgba(102, 102, 102, 1)
+$tabs-bg = alpha($primary, 80%)
 
-$blue = rgba(62, 106, 137, 1)
-$blue-transparent = alpha($blue, 85%)
-$green = rgba(53, 185, 118, 1)
-$whiteBG = alpha(#FFFFFF, 90%)
+$inactive-btn = alpha(white, 50%)
+$active-btn = white
 
-$border-gray = #DDDDDD
+$sidebar-z-index ?= 2000
 
-$ll-gray = rgba(245, 245, 245, 1)
-$l-gray = rgba(235, 235, 235, 1)
-$m-gray = rgba(204, 204, 204, 1)
-$d-gray = rgba(150, 150, 150, 1)
+$sidebar-main-width ?= 350px
 
-$sidebar-width = 300px
-$sidebar-tabs-width = 60px
-$data-table-width = 550px
-$data-table-tabs-width = 60px
+if $sidebar-main-width < 250
+  $sidebar-main-width = 250px
+
+$sidebar-tabular-width ?= 580px
+
+$sidebar-main-menu-width ?= 50px
+
+$content-bg ?= rgba(255, 255, 255, .9)

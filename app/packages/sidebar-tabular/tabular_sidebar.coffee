@@ -1,5 +1,4 @@
 if Meteor.isClient
-
   Template.tabularSidebar.onCreated ->
     @sidebarOpen = @data.sidebarOpen
 

@@ -22,7 +22,7 @@ if Meteor.isClient
 
   Template.mainSidebar.helpers
     sideBarOpen: ->
-      Template.instance().data.sidebarOpen.get()
+      Template.instance().open.get()
     MODE_EXPLORE: ->
       return GritsConstants.MODE_EXPLORE
     MODE_ANALYZE: ->
