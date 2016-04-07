@@ -1,0 +1,50 @@
+template(name="helpSimulation")
+  .help--app-mode.featured
+    if showTitle
+      h2 Passenger Simulation
+    p.inline
+      | In this mode, users can select at least one origination airport (node),
+      | a date range, and a maximum number of passengers to consider.
+      | FLIRT displays the results of a
+      a(href='https://en.wikipedia.org/wiki/Monte_Carlo_method') Monte Carlo
+      | simulation, outputting likely passenger destinations from a
+      | specified origin based on previous analysis of common passenger
+      | layover and transfer probabilities.
+    a.show-more-info [read more info]
+    .extended-info.hidden
+      p The simulations mirror real life traveler behavior to give analyst an accurate picture of travel patterns. Flight legs are combined into a single path and visualized on the map. A heatmap layer and rank-ordered list of flights based on the total number of passengers to terminal destinations are generated during the simulation. Details of each simulation are are stored in FLIRT’s backend to facilitate easy repetition and sharing.
+
+    .mode-mapp--instructions
+      h3
+        i.fa.fa-plane
+        | Run a passenger simulation
+
+      ul
+        li Click "Passenger Simulation"
+        li
+          | Search for and select at least one origination airport
+          span.supplemental (To select multiple airports simply search for and select another airport)
+        li Choose the time window of the simulation by selecting a start and end date
+        li Choose the total number of passengers to consider in the simulation
+        li Click "Start Passenger Simulation" to watch the visualization render based on your selections.
+        li
+          | A progress bar under the "Start Passenger Simulation" button and within the Analysis
+          | sidebar (accessed by clicking #[i(class='fa fa-table')]) show the percentage
+          | of total passengers processed in the simulation.
+          span.note
+            | Simulations considering multiple airports and/or
+            | higher numbers of passengers will take longer to complete.
+
+      h3
+        i.fa.fa-share-alt
+        | Share a Simulation
+      ul
+        li Simulations are shared by clicking  #[i(class='fa fa-share-alt')]
+        li Click "copy" to copy the link to your clipboard
+
+      h3
+        i.fa.fa-table
+        | View simulation details and tabular data
+      ul
+        li Click #[i(class='fa fa-table')] (right)
+        li Data can be downloaded in various formats including: JSON, CSV, XML and XLSX

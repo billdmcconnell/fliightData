@@ -16,10 +16,10 @@ Template.userGuide.helpers
     contentItem == Template.instance().selectedSecondaryTopic.get()
 
 Template.userGuide.events
-  'click .mode-selector.primary a': (event, instance) ->
+  'click .help--mode-selector.primary a': (event, instance) ->
     instance.selectedFeaturedTopic.set +$(event.currentTarget).data('topic')
 
-  'click .mode-selector.secondary a': (event, instance) ->
+  'click .help--mode-selector.secondary a': (event, instance) ->
     instance.selectedSecondaryTopic.set +$(event.currentTarget).data('topic')
 
   'click .show-more-info': (event) ->

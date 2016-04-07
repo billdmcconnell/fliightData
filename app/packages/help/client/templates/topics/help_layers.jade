@@ -1,0 +1,11 @@
+template(name="helpLayers")
+  .help--app-mode.featured
+    if showTitle
+      h2 Map Layers
+    ul
+      li Click #[i(class='fa fa-map-o')]
+      li Select the type of map you wish to use:
+        ul
+          li #[b Transportation] - Shows roads, names and boundaries
+          li #[b Satellite] - Shows detailed satellite imagery of terrain
+          li #[b Hybrid] - combination of transportation and satellite
