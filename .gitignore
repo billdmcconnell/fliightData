@@ -1,5 +1,7 @@
 .DS_Store
 *~
-
 dist/*.tar.gz
 tools/node_modules/
+**.swp
+**.swo
+

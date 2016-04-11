@@ -1,9 +1,0 @@
-[submodule "app/packages/grits-net-mapper"]
-	path = app/packages/grits-net-mapper
-	url = git@github.com:ecohealthalliance/grits-net-mapper.git
-[submodule "app/packages/grits-net-meteor"]
-	path = app/packages/grits-net-meteor
-	url = git@github.com:ecohealthalliance/grits-net-meteor.git
-[submodule "app/packages/flirt-sidebar"]
-	path = app/packages/flirt-sidebar
-	url = git@github.com:ecohealthalliance/flirt-sidebar.git
