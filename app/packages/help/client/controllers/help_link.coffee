@@ -3,5 +3,8 @@ Template.helpLink.events
     helpTemplate = $(event.currentTarget).data('template')
     Session.set 'helpTemplate', helpTemplate
     Session.set 'helpGuideState', true
-    Session.set 'helpSubTopic', true
+    if instance.data.showTitle
+      Session.set 'helpSubTopic', true
+    else
+      Session.set 'helpSubTopic', false
     $('.help--modal').modal 'show'

@@ -85,9 +85,11 @@ if $sidebar-main-menu-width == 0
   z-index 100
   width 'calc(100% - %s)' % $sidebar-main-menu-width
 
-.help
+.help-toggle
   position absolute
   bottom 0
+  left 50%
+  transform translate(-50%, 0)
 
 .sidebar-footer
   background alpha($l-gray, 95%)

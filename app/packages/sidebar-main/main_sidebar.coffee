@@ -51,13 +51,13 @@ if Meteor.isClient
       if _lastMode == mode
         return
       Session.set(GritsConstants.SESSION_KEY_MODE, mode)
-      return
+
     'click .zoom-control--in': (event) ->
       Template.gritsMap.getInstance().zoomIn()
-      return
+
     'click .zoom-control--out': (event) ->
       Template.gritsMap.getInstance().zoomOut()
-      return
+
     'click #sidebar-draw-rectangle-tool': (event, instance) ->
       map = Template.gritsMap.getInstance()
       _isDrawing = not instance.isDrawing.get()
