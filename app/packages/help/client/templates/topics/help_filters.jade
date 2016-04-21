@@ -1,0 +1,11 @@
+template(name="helpFilters")
+  .help--app-mode.featured
+    if showTitle
+      h2 Seat Count Filtration
+    p Reduce the number of flights and/or destination airports displayed on map and in table based on seat counts.
+    ul
+      li Click #[i(class='fa fa-sliders')]
+      li Adjust Flight Seat Count
+      li Move the slider handles to the left or right to filter the displayed flight paths based on seat count
+      li Adjust Airport Seat Count
+      li Move the slider handles to the left or right to filter the displayed destination airport nodes based on the total seat count of all incoming flights.

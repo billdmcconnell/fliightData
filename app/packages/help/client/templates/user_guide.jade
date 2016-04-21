@@ -1,0 +1,33 @@
+template(name="userGuide")
+  .help--app-modes
+    .help--mode-selector.primary
+      a.help--app-mode-link.featured(data-topic='1' class='{{#if activeFeatureMenu 1}} active {{/if}}')
+        | Viewing Scheduled Direct Flights
+      a.help--app-mode-link.featured(data-topic='2' class='{{#if activeFeatureMenu 2}} active {{/if}}')
+        | Running a Passenger Simulation
+
+    .help--app-mode-wrapper(data-topic='1' class='{{#if activeFeatureContent 1}} active {{/if}}')
+      +helpDirectFlights
+
+    .help--app-mode-wrapper(data-topic='2' class='{{#if activeFeatureContent 2}} active {{/if}}')
+      +helpSimulation
+
+    .help--mode-selector.secondary
+      a.help--app-mode-link(data-topic='1' class='{{#if activeSecondaryMenu 1}} active {{/if}}')
+        i.fa.fa-object-group
+        | All Airports Mode
+      a.help--app-mode-link(data-topic='2' class='{{#if activeSecondaryMenu 2}} active {{/if}}')
+        i.fa.fa-sliders
+        | Advanced Filtration
+      a.help--app-mode-link(data-topic='3' class='{{#if activeSecondaryMenu 3}} active {{/if}}')
+        i.fa.fa-map-o
+        | Map Layers
+
+    .help--app-mode-wrapper(class="{{#if activeSecondaryContent 1}} active {{/if}}")
+      +helpAllAirports
+
+    .help--app-mode-wrapper(class="{{#if activeSecondaryContent 2}} active {{/if}}")
+      +helpFilters
+
+    .help--app-mode-wrapper(class="{{#if activeSecondaryContent 3}} active {{/if}}")
+      +helpLayers

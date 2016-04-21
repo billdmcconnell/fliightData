@@ -1,0 +1,22 @@
+template(name="helpDirectFlights")
+  .help--app-mode.featured
+    if showTitle
+      h2 Scheduled Direct Flights
+    p
+      | In this mode, users can select at least one origination airport (node)
+      | and a date range. Based on this information, FLIRT displays non-stop flight paths from a
+      | selected airport to all possible destinations, ranking destinations by summed seat count.
+
+      .app-mode--instructions
+        ul
+          li
+            | Search for and select at least one origination airport.
+            span.supplemental (To select multiple airports simply search for and select another airport)
+          li Choose the time window of your analysis by selecting a start and end date
+          li Click the "Show Direct Flights" button to visualize the results
+
+        p To view detailed information about a particular flight, click on the path
+        p
+          | To view and download detailed tabular data about of the flights,
+          | click on #[i(class='fa fa-table')] (right).
+          | Data can be downloaded in various formats including: JSON, CSV, XML and XLSX

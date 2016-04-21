@@ -1,0 +1,17 @@
+template(name="help")
+  .help
+    .help--modal.modal.fade(data-backdrop='false' tabindex='-1', role='dialog')
+      .modal-dialog.help--modal-dialog
+        .modal-content.help--modal-content
+          button.close(type='button', data-dismiss='modal', aria-label='Close')
+            i.fa.fa-times-circle(aria-hidden='true')
+
+          .modal-body.help--modal-body
+            h1
+              span.help--logo
+              span.help--title User Guide
+            .help--intro
+              p FLIRT is a network analysis tool that enables detailed examination of flight networks.
+
+            .help--content-wrapper
+              +Template.dynamic template=helpTemplate data=data

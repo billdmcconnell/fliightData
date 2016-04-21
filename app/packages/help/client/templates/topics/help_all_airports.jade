@@ -1,0 +1,20 @@
+template(name="helpAllAirports")
+  .help--app-mode.featured
+    if showTitle
+      h2 All Airports Mode
+    p
+      | In this mode all airports are display on the map.
+      | Users can select a rectangular region on which to run an analysis.
+      | All airports found in the region will be combined into a single origination or meta-node.
+      | The paths originating from the meta-node include all flight paths from each airport in the selected region.
+
+    .instructions
+      h3 Creating a meta-node and showing its throughput
+      ul
+        li Click #[i(class='fa fa-object-group')]
+        li Click and drag your cursor on the map to draw a rectangle over the area you would like to analyze
+        li Once satisfied with your search area, click ‘apply’ to create the meta-node and show the throughput
+
+      p To run a simulation using the meta-node, ensure you are in Simulation mode by clicking "Simulation". The meta-node will appear inside the search box. Then click the "Start Simulation" button.
+
+      span.note Since simulations using meta-nodes may consider a large number of origination airports and/or passengers, processing times will likely be increased. Refer to progress bars for the percentage of passengers simulated.

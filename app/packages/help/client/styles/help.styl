@@ -1,3 +1,5 @@
+@import 'nib'
+
 $modal-z-index = 10000
 $primary = rgba(3, 63, 100, 1)
 $secondary = rgba(179, 225, 178, 1)
@@ -7,7 +9,7 @@ menuBorder($color)
   border-top 1px solid $color
   border-bottom 1px solid $color
 
-#help-modal
+.help--modal
   z-index $modal-z-index
   color white
   h1
@@ -20,35 +22,33 @@ menuBorder($color)
     font-size 1.1em
     font-weight 600
 
-  .logo
-    background url(../../../images/flirt-logo-simple.svg) no-repeat
-    background-size cover
-    height 52px
-    width 58px
-    display inline-block
   a
     text-decoration none
     cursor pointer
   .fa
     margin-right 5px
 
-.modal-backdrop
-  z-index $modal-z-index - 10000
+.help--logo
+  background url(../../../../images/flirt-logo-simple.svg) no-repeat
+  background-size cover
+  height 52px
+  width 58px
+  display inline-block
 
-.modal-backdrop
+.help--modal-backdrop
   background white
   &.in
     opacity .75
 
-.modal-dialog
+.help--modal-dialog
   min-width 70%
   margin-top 50px
 
-.modal-content
+.help--modal-content
   border-radius 3px
   box-shadow 0 5px 15px rgba(0, 0, 0, .2)
   border 0
-  background rgba(62, 106, 137, .85)
+  background rgba(62, 106, 137, .9)
   .close
     position absolute
     right 10px
@@ -59,16 +59,27 @@ menuBorder($color)
     color alpha($primary, 90%)
     opacity 1
     text-shadow none
+    &:focus
+      color darken(alpha($primary, 100%), 50%)
+      outline 0
+      box-shadow none
     &:hover
       color darken(alpha($primary, 100%), 50%)
+    &:active
+    &:active:focus
+      color alpha($primary, 100%)
 
-.modal-body
+.help--content-wrapper
+  margin 0 -20px
+
+.help--modal-body
+  padding 20px
   padding-bottom 0
 
-.intro
+.help--intro
   margin-bottom 25px
 
-.mode-selector
+.help--mode-selector
   display flex
   margin 0 -5px
   background rgba(80, 115, 140, 1)
@@ -106,18 +117,32 @@ menuBorder($color)
     content '\f249'
     font-family 'FontAwesome'
 
-.app-modes
-  background rgba(0, 0, 0, .1)
-  margin 0 -15px
+.help--app-modes
+  background rgba(0, 0, 0, .2)
   padding-bottom 20px
 
-.app-mode
+.help--app-mode-wrapper
   display none
   &.active
     display block
-    padding 20px 15px 25px 15px
+    padding 20px
+    .help--app-mode
+      padding 0
 
-.app-mode-link
+.help--app-mode
+  &.featured
+    padding 0 20px 20px
+  &.featured
+    padding 0 20px 20px
+
+  h2
+    margin 0 -25px 20px -25px
+    padding 15px 20px
+    background $secondary
+    font-weight 700
+    color $primary
+
+.help--app-mode-link
   position relative
   &.active
     &::after
@@ -155,3 +180,38 @@ li
 .supplemental
   font-size 95%
   display block
+
+.help-link
+  cursor pointer
+  color #CCC
+
+  &.inline
+    display inline-block
+    vertical-align middle
+    margin 0 3px
+
+  &.block
+    text-align center
+    display block
+    margin-top 20px
+    font-size 2em
+
+  &.contrast
+    color alpha($primary, 85%)
+    &:hover
+      color $primary
+
+  &.large
+    font-size 1.5em
+    margin 0 5px
+
+  &::before
+    content '\f05a'
+    font-family 'FontAwesome'
+    font-size 1em
+
+  &:hover
+    color $secondary
+
+  &:active
+    color darken($secondary, 20%)

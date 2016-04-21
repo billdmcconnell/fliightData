@@ -14,17 +14,24 @@ Package.onUse(function(api) {
     'reactive-var',
     'blaze-html-templates',
     'mquandalle:jade@0.4.9',
-    'mquandalle:stylus@1.0.10',
+    'stylus',
     'twbs:bootstrap@3.3.6',
     'fortawesome:fontawesome@4.5.0',
   ], 'client');
 
   api.addFiles([
-    'client/user_guide.jade',
-    'client/user_guide.coffee',
-    'client/help.styl',
-    'client/help.jade',
-    'client/help.coffee',
+    'client/styles/help.styl',
+    'client/templates/topics/help_all_airports.jade',
+    'client/templates/topics/help_direct_flights.jade',
+    'client/templates/topics/help_filters.jade',
+    'client/templates/topics/help_layers.jade',
+    'client/templates/topics/help_simulation.jade',
+    'client/templates/help_link.jade',
+    'client/templates/user_guide.jade',
+    'client/templates/help.jade',
+    'client/controllers/help_link.coffee',
+    'client/controllers/user_guide.coffee',
+    'client/controllers/help.coffee',
   ], 'client');
 
 });
