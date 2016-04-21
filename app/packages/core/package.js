@@ -12,12 +12,17 @@ Package.onUse(function(api) {
   api.use('coffeescript');
   api.use('blaze-html-templates', 'client');
   api.use('mquandalle:jade', 'client');
+  api.use('stylus', 'client');
   api.use('reactive-var', 'client');
   api.use('reactive-dict', 'client');
   api.use('andrei:tablesorter', 'client');
   api.use('okgrow:analytics', 'client');
 
+  api.use('sidebar-main', 'client');
+  api.use('sidebar-tabular', 'client');
+
   api.addFiles('moduleSelector.jade', 'client');
+  api.addFiles('core.styl', 'client');
   api.addFiles('core.jade', 'client');
   api.addFiles('core.coffee', 'client');
 });
