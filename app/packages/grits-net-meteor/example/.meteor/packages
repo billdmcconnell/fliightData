@@ -5,12 +5,10 @@
 # but you can also edit it by hand.
 
 meteor-platform
-insecure
 coffeescript
 reactive-var
 reactive-dict
 grits:grits-net-meteor@0.0.1
-grits:flirt-sidebar@0.0.1
 xolvio:cucumber@0.19.4_1
 andrei:tablesorter
 okgrow:analytics
