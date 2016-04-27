@@ -403,7 +403,7 @@ class GritsFilterCriteria
     if _.isNull(discontinuedDatePicker)
       return
 
-    discontinuedDate = discontinuedDatePicker.data('DateTimePicker').date()
+    discontinuedDate = discontinuedDatePicker.data('DateTimePicker').date().toISOString()
 
     if _.isNull(date) || _.isNull(discontinuedDate)
       if _.isEqual(date, discontinuedDate)
@@ -413,7 +413,7 @@ class GritsFilterCriteria
         self.operatingDateRangeStart.set(null)
       return
 
-    if _.isEqual(date.toISOString(), discontinuedDate.toISOString())
+    if _.isEqual(date.toISOString(), discontinuedDate)
       # the reactive var is already set, change is from the UI
       self.createOrUpdate('discontinuedDate', {key: 'discontinuedDate', operator: '$gte', value: discontinuedDate})
     else
@@ -442,7 +442,7 @@ class GritsFilterCriteria
     if _.isNull(effectiveDatePicker)
       return
 
-    effectiveDate = effectiveDatePicker.data('DateTimePicker').date()
+    effectiveDate = effectiveDatePicker.data('DateTimePicker').date().toISOString()
 
     if _.isNull(date) || _.isNull(effectiveDate)
       if _.isEqual(date, effectiveDate)
@@ -452,7 +452,7 @@ class GritsFilterCriteria
         self.operatingDateRangeEnd.set(null)
       return
 
-    if _.isEqual(date.toISOString(), effectiveDate.toISOString())
+    if _.isEqual(date.toISOString(), effectiveDate)
       # the reactive var is already set, change is from the UI
       self.createOrUpdate('effectiveDate', {key: 'effectiveDate', operator: '$lte', value: effectiveDate})
     else
