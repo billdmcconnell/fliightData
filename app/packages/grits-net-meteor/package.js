@@ -54,7 +54,7 @@ Package.on_use(function(api){
     'client/stylesheets/sidebar.import.styl',
     'client/stylesheets/sidebar_table.import.styl',
     'client/stylesheets/main.styl',
-    'client/stylesheets/overlay.styl',
+    'client/stylesheets/overlay.import.styl',
     'client/lib/L.D3SvgOverlay.min.js',
     'client/lib/tableExport.min.js',
     'client/lib/webgl-heatmap.js',
@@ -92,11 +92,13 @@ Package.on_use(function(api){
     'client/templates/grits_elementDetails.jade',
     'client/templates/grits_elementDetails.coffee',
     'client/templates/loading.jade',
+    'client/templates/loading.coffee',
     'client/templates/grits_overlay.jade',
     'client/templates/grits_overlay.coffee'
   ], 'client');
 
   api.addAssets([
+    'client/images/flirt-loading.gif',
     'client/images/flirt.png',
     'client/images/flirt-logo-inline.png',
     'client/images/origin-marker-icon.svg',
