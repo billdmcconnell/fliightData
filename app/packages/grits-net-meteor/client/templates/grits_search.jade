@@ -11,7 +11,7 @@ template(name='gritsSearch')
           name='departureSearchMain'
           placeholder='{{_ "gritsSearch.tokenfield-placeholder"}}')
     .filter-wrapper
-      .filter-row(style='display: none;')
+      .filter-row
         .col-xs-12.text-center
           input#includeNearbyAirports(type='checkbox', name='includeNearbyAirports')
           span {{_ "gritsSearch.include-nearby-label"}}
