@@ -284,6 +284,8 @@ Template.gritsSearch.onCreated ->
 
 # triggered when the 'filter' template is rendered
 Template.gritsSearch.onRendered ->
+  _updatePaneContentHeight()
+  _watchWindowSizeChange()
   departureSearchMain = $('#departureSearchMain').tokenfield({
     typeahead: [{hint: false, highlight: true}, {
       display: (match) ->
@@ -472,6 +474,24 @@ _showThroughput = (e) ->
     return
   GritsFilterCriteria.apply()
   return
+
+_updatePaneContentHeight = ->
+  $searchBar = $('#departureSearchMainSearchBar')
+  $filterWrap = $('.filter-wrapper')
+  $filterFooter = $('.filter-footer')
+  searchBarBottom = $searchBar.height() + $searchBar.offset().top
+  footerTop = $filterFooter.offset().top
+  verticalSpace =  footerTop - searchBarBottom
+  $filterWrap.css 'max-height', "#{verticalSpace}px"
+  if verticalSpace < 0
+    $filterFooter.addClass 'not-visible'
+  else
+    $filterFooter.removeClass 'not-visible'
+
+_watchWindowSizeChange = ->
+  $(window).resize ->
+    _updatePaneContentHeight()
+
 # events
 #
 # Event handlers for the grits_filter.html template
