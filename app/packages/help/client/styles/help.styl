@@ -1,9 +1,5 @@
+@import '{styles-base}/variables.styl'
 @import 'nib'
-
-$modal-z-index = 10000
-$primary = rgba(3, 63, 100, 1)
-$secondary = rgba(179, 225, 178, 1)
-$transparent-white = alpha(white, 50%)
 
 menuBorder($color)
   border-top 1px solid $color
@@ -56,18 +52,18 @@ menuBorder($color)
     z-index 1
     font-size 2.5em
     cursor pointer
-    color alpha($primary, 90%)
+    color alpha($primary-d, 90%)
     opacity 1
     text-shadow none
     &:focus
-      color darken(alpha($primary, 100%), 50%)
+      color darken(alpha($primary-d, 100%), 50%)
       outline 0
       box-shadow none
     &:hover
-      color darken(alpha($primary, 100%), 50%)
+      color darken(alpha($primary-d, 100%), 50%)
     &:active
     &:active:focus
-      color alpha($primary, 100%)
+      color alpha($primary-d, 100%)
 
 .help--content-wrapper
   margin 0 -20px
@@ -99,10 +95,10 @@ menuBorder($color)
     &.active:hover
     &:hover
       background $secondary
-      color $primary
+      color $primary-d
       menuBorder(@background)
     &:hover
-      background $primary
+      background $primary-d
       color white
     &.featured
       padding 15px
@@ -140,7 +136,7 @@ menuBorder($color)
     padding 15px 20px
     background $secondary
     font-weight 700
-    color $primary
+    color $primary-d
 
 .help--app-mode-link
   position relative
@@ -163,7 +159,7 @@ p a
   display inline
   color $secondary
   &:hover
-    color darken($primary, 20%)
+    color darken($primary-d, 20%)
 
 p
 li
@@ -197,9 +193,14 @@ li
     font-size 2em
 
   &.contrast
-    color alpha($primary, 85%)
+    color alpha($primary-d, 85%)
     &:hover
-      color $primary
+      color $primary-d
+
+  &.help-link--sidebar
+    color $transparent-white
+    &:hover
+      color white
 
   &.large
     font-size 1.5em
@@ -215,3 +216,17 @@ li
 
   &:active
     color darken($secondary, 20%)
+
+.help--feedback-links
+  margin-top 20px
+  text-align center
+  a
+    color $ll-gray
+    margin-right 10%
+    font-weight 300
+    &:last-of-type
+      margin 0
+    &:hover
+      color $secondary
+    &:active
+      color $secondary-d
