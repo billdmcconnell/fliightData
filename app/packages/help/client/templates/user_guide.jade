@@ -31,3 +31,11 @@ template(name="userGuide")
 
     .help--app-mode-wrapper(class="{{#if activeSecondaryContent 3}} active {{/if}}")
       +helpLayers
+
+    .help--feedback-links
+      a(href='mailto:tech@ecohealthalliance.org?Subject=FLIRT%20Feedback')
+        span.fa.fa-comment
+        span Send Feedback
+      a(href='mailto:tech@ecohealthalliance.org?subject=FLIRT%20Bug%20Report&body=Please%20describe%20the%20bug%20in%20detail%20and%20let%20us%20know%20what%20casued%20it.%20Thanks!')
+        span.fa.fa-bug
+        span Report a Bug
