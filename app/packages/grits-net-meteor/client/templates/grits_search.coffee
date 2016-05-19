@@ -5,13 +5,11 @@
 _init = true # flag, set to false when initialization is done
 _initStartDate = null # onCreated will initialize the date through GritsFilterCriteria
 _initEndDate = null # onCreated will initialize the date through GritsFilterCriteria
-_initLimit = null # onCreated will initialize the limt through GritsFilterCriteria
 _departureSearchMain = null # onRendered will set this to a typeahead object
 _effectiveDatePicker = null # onRendered will set this to a datetime picker object
 _discontinuedDatePicker = null # onRendered will set this to a datetime picker object
 _matchSkip = null # the amount to skip during typeahead pagination
 _simulationProgress = new ReactiveVar(0)
-_disableLimit = new ReactiveVar(false) # toggle if we will allow limit/skip
 _suggestionTemplate = _.template('
   <span class="airport-code"><%= raw._id %></span>
   <span class="airport-info">
@@ -257,19 +255,11 @@ Template.gritsSearch.helpers({
     return _initStartDate
   end: ->
     return _initEndDate
-  limit: ->
-    if _init
-      # set inital limit
-      return _initLimit
-    else
-      # reactive var
-      return GritsFilterCriteria.limit.get()
 })
 
 Template.gritsSearch.onCreated ->
   _initStartDate = GritsFilterCriteria.initStart()
   _initEndDate = GritsFilterCriteria.initEnd()
-  _initLimit = GritsFilterCriteria.initLimit()
   _init = false # done initializing initial input values
 
   # Public API
@@ -280,7 +270,6 @@ Template.gritsSearch.onCreated ->
   Template.gritsSearch.getEffectiveDatePicker = getEffectiveDatePicker
   Template.gritsSearch.getDiscontinuedDatePicker = getDiscontinuedDatePicker
   Template.gritsSearch.simulationProgress = _simulationProgress
-  Template.gritsSearch.disableLimit = _disableLimit
 
 # triggered when the 'filter' template is rendered
 Template.gritsSearch.onRendered ->
@@ -364,14 +353,12 @@ Template.gritsSearch.onRendered ->
       return
     if mode == GritsConstants.MODE_EXPLORE
       _resetSimulationProgress()
-      _disableLimit.set(false)
       # reset the URL back to the root
       FlowRouter.go('/')
     else
       # initialize the bootstrap slider (this is not rendered by default in grits_search.html)
       # it is done using nextTick to give Blaze template time to render
       async.nextTick(-> $('#simulatedPassengersInputSlider').slider())
-      _disableLimit.set(true)
     self.mode = mode
 
   Meteor.autorun (c) ->
@@ -455,10 +442,6 @@ _changeDateHandler = (e) ->
     date = _effectiveDatePicker.data('DateTimePicker').date()
     GritsFilterCriteria.operatingDateRangeEnd.set(date)
     return
-_changeLimitHandler = (e) ->
-  val = parseInt($("#limit").val(), 10)
-  GritsFilterCriteria.limit.set(val)
-  return
 _startSimulation = (e) ->
   if $(e.target).hasClass('disabled')
     return
@@ -507,7 +490,6 @@ Template.gritsSearch.events
   'slideStop #simulatedPassengersInputSlider': _changeSimulatedPassengersHandler
   'click #startSimulation': _startSimulation
   'click #showThroughput': _showThroughput
-  'change #limit': _changeLimitHandler
   'change #departureSearchMain': _changeDepartureHandler
   'dp.change': _changeDateHandler
   'dp.show': (event) ->
