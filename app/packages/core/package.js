@@ -16,7 +16,6 @@ Package.onUse(function(api) {
   api.use('reactive-var', 'client');
   api.use('reactive-dict', 'client');
   api.use('andrei:tablesorter', 'client');
-  api.use('okgrow:analytics', 'client');
 
   api.use('sidebar-main', 'client');
   api.use('sidebar-tabular', 'client');
