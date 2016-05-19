@@ -1,5 +1,5 @@
-_ignoreFields = ['limit', 'offset'] # fields that are used for maintaining state but will be ignored when sent to the server
-_validFields = ['departure', 'effectiveDate', 'discontinuedDate', 'limit', 'offset']
+_ignoreFields = []
+_validFields = ['departure', 'effectiveDate', 'discontinuedDate']
 _validOperators = ['$gte', '$gt', '$lte', '$lt', '$eq', '$ne', '$in', '$near', null]
 _state = null # keeps track of the query string state
 # local/private minimongo collection
@@ -63,13 +63,6 @@ class GritsFilterCriteria
     self.operatingDateRangeEnd = new ReactiveVar(null)
     self.trackOperatingDateRangeEnd()
 
-    #   limit
-    self.limit = new ReactiveVar(1000)
-    self.trackLimit()
-
-    #   offset
-    self.offset = new ReactiveVar(0)
-
     # airportCounts
     # during a simulation the airports are counted to update the heatmap
     self.airportCounts = {}
@@ -113,15 +106,6 @@ class GritsFilterCriteria
     yearStr = year.toString().slice(2,4)
     self.operatingDateRangeEnd.set(new Date(year, month, date))
     return "#{month}/#{date}/#{yearStr}"
-  # initialize the limit through the 'effectiveDate' filter
-  #
-  # @return [Integer] limit
-  initLimit: () ->
-    self = this
-    initLimit = self.limit.get()
-    self.setLimit(initLimit)
-    self._baseState = JSON.stringify(self.getQueryObject())
-    return initLimit
   # Creates a new filter criteria and adds it to the collection or updates
   # the collection if it already exists
   #
@@ -221,8 +205,7 @@ class GritsFilterCriteria
   # process the results of the meteor methods to get flights
   #
   # @param [Array] flights, an Array of flights to process
-  # @param [Integer] offset, the offset of the query
-  process: (flights, offset) ->
+  process: (flights) ->
     self = this
     if self._queue != null
       self._queue.kill()
@@ -233,10 +216,6 @@ class GritsFilterCriteria
     map = Template.gritsMap.getInstance()
     layerGroup = GritsLayerGroup.getCurrentLayerGroup()
     heatmapLayerGroup = Template.gritsMap.getInstance().getGritsLayerGroup(GritsConstants.HEATMAP_GROUP_LAYER_ID)
-    # if the offset is equal to zero, clear the layers
-    if offset == 0
-      layerGroup.reset()
-      heatmapLayerGroup.reset()
 
     count = Session.get(GritsConstants.SESSION_KEY_LOADED_RECORDS)
 
@@ -266,7 +245,7 @@ class GritsFilterCriteria
     # add the flights to thet queue which will start processing
     self._queue.push(flights)
     return
-  # applies the filter but does not reset the offset
+  # applies the filter
   #
   # @param [Function] cb, the callback function
   more: (cb) ->
@@ -289,10 +268,6 @@ class GritsFilterCriteria
     # set the state
     self.setState()
     self.compareStates()
-
-    # set the arguments
-    limit = query.limit
-    offset = self.offset.get()
 
     # remove the ignoreFields from the query
     _.each(_ignoreFields, (field) ->
@@ -341,7 +316,7 @@ class GritsFilterCriteria
           callback(null)
           return
 
-        Meteor.call('flightsByQuery', query, limit, offset, (err, flights) ->
+        Meteor.call('flightsByQuery', query, (err, flights) ->
           if (err)
             callback(err)
             return
@@ -366,16 +341,15 @@ class GritsFilterCriteria
       if cb && _.isFunction(cb)
         cb(null, flights)
       # process the flights
-      self.process(flights, offset)
+      self.process(flights)
       return
     )
     return
-  # applies the filter; resets the offset, loadedRecords, and totalRecords
+  # applies the filter; resets loadedRecords, and totalRecords
   #
   # @param [Function] cb, the callback function
   apply: (cb) ->
     self = this
-    self.offset.set(0)
     # allow the reactive var to be set before continue
     async.nextTick(() ->
       # reset the loadedRecords and totalRecords
@@ -534,62 +508,6 @@ class GritsFilterCriteria
         self.compareStates()
       )
     return
-  # sets the limit input on the UI to the 'value'
-  # specified, as well as, updating the underlying FilterCriteria.
-  #
-  # @note This is not part of the query, but is included to maintain the UI state.  Upon 'apply' the value is deleted from the query and used as an arguement to the server-side method
-  # @param [Integer] value
-  setLimit: (value) ->
-    self = this
-
-    # do not allow this to run prior to jQuery/DOM
-    if _.isUndefined($)
-      return
-
-    if _.isUndefined(value)
-      throw new Error('Limit must be defined.')
-
-    if _.isEqual(self.limit.get(), value)
-      if _.isNull(value)
-        self.remove('limit')
-      else
-        val = Math.floor(parseInt(value, 10))
-        if isNaN(val) or val < 1
-          throw new Error('Limit must be positive')
-        self.createOrUpdate('limit', {key: 'limit', operator: '$eq', value: val})
-    else
-      self.limit.set(value)
-    return
-  trackLimit: () ->
-    self = this
-    Meteor.autorun ->
-      obj = self.limit.get()
-      try
-        self.setLimit(obj)
-        async.nextTick(() ->
-          self.compareStates()
-        )
-      catch e
-        Meteor.gritsUtil.errorHandler(e)
-    return
-  # sets the offest as calculated by the current query that has more results
-  # than the limit
-  #
-  # @note This is not part of the query, but is included to maintain the UI state.  Upon 'apply' the value is deleted from the query and used as an arguement to the server-side method
-  setOffset: () ->
-    self = this
-    # do not allow this to run prior to jQuery/DOM
-    if _.isUndefined($)
-      return
-
-    totalRecords = Session.get(GritsConstants.SESSION_KEY_TOTAL_RECORDS)
-    loadedRecords = Session.get(GritsConstants.SESSION_KEY_LOADED_RECORDS)
-
-    if (loadedRecords < totalRecords)
-      self.offset.set(loadedRecords)
-    else
-      self.offset.set(0)
-    return
   # returns a unique list of tokens from the search bar
   getOriginIds: () ->
     self = this
@@ -719,8 +637,6 @@ class GritsFilterCriteria
       Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, simPas)
 
       # setup parameters for the subscription to SimulationItineraries
-      limit = self.limit.get()
-      skip = 0 # clicking on start risk analysis always starts with zero
       self.processSimulation(simPas, res.simId)
       return
     )

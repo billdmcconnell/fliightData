@@ -75,22 +75,6 @@ template(name='gritsSearch')
         +helpLink helpTemplate='helpSimulation' showTitle=true classNames='block'
 
     .filter-footer
-      if isExploreMode
-        #limitBar.limit-bar
-          .limit.col-xs-12
-            .limitSearchTitle
-              span.filter-label {{_ "gritsSearch.limit-label"}}
-            .limitInput
-              input#limit.form-control.input-sm.advanced-filter-status(
-                type='number'
-                value=limit)
-            div
-              button#loadMore.btn.btn-sm.btn-default.pull-right(disabled='true')
-                span.filter-label(style='font-size: smaller;') {{_ "gritsSearch.more-button"}}
-                img#moreLoading(
-                  src='/packages/grits_grits-net-meteor/client/images/ajax-loader.gif'
-                  style='display: none;')
-
       .status-bar.clearfix
         .col.col-xs-2.filter-label {{_ "gritsSearch.status-bar-label" }}
         .col.col-xs-5.text-center
