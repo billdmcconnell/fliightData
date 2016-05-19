@@ -43,10 +43,19 @@ _cacheActiveAirports = (done) ->
   Meteor.call('findActiveAirports', done)
   return
 
+_ensureIndexes = (done) ->
+  console.log('ensure indexes')
+  # Ensure geo index on airport location
+  Airports._ensureIndex
+    loc: '2dsphere'
+  done()
+
 warmupMongo = () ->
   start = new Date()
   console.log('starting warmup')
   async.auto({
+    'ensureIndexes': (callback,  result) ->
+      _ensureIndexes(callback)
     'warmupMongoFlights': (callback, result) ->
       _warmupMongoFlights(callback)
     'warmupMongoAirports': (callback, result) ->
