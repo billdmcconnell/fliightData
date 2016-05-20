@@ -213,10 +213,10 @@
             "en": "The URL has been copied to your clipboard"
         },
         "includeNearbyRequired": {
-            "en": "Include nearby requires at least one Departure"
+            "en": "Include nearby airports requires at least one Departure"
         },
         "includeNearbyMetaNode": {
-            "en": "Include nearby does not work with MetaNodes"
+            "en": "Include nearby airports does not work with MetaNodes"
         },
         "layerLoading": {
             "en": "The layer has not finished loading"

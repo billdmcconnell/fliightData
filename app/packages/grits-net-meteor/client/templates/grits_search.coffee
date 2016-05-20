@@ -507,11 +507,11 @@ Template.gritsSearch.events
     departures = GritsFilterCriteria.departures.get()
 
     if departures.length <= 0
-      toastr.error(i18n.get('includeNearbyRequired'))
+      toastr.error(i18n.get('toastMessages.includeNearbyRequired'))
       return false
 
     if (departures[0].indexOf(GritsMetaNode.PREFIX) >= 0)
-      toastr.error(i18n.get('includeNearbyMetaNode'))
+      toastr.error(i18n.get('toastMessages.includeNearbyMetaNode'))
       return false
 
     if $('#includeNearbyAirports').is(':checked')
