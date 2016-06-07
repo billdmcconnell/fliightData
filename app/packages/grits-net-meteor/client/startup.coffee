@@ -1,11 +1,12 @@
 Meteor.startup ->
   # NOTE: *the gritsOverlay indicator will be showing by default*
-  
+
   # initialize Session variables
   Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
   Session.set(GritsConstants.SESSION_KEY_LOADED_RECORDS, 0)
   Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, 0)
   Session.set(GritsConstants.SESSION_KEY_IS_READY, false) # the map will not be displayed until isReady is set to true
+  Session.set 'loading', true
 
   # async flow control so we can set grits-net-meteor:isReady true when done
   if Meteor.gritsUtil.debug
@@ -63,8 +64,7 @@ Meteor.startup ->
     if Meteor.gritsUtil.debug
       console.log('end sync [i18n, airports, effectiveDateMinMax, discontinuedDateMinMax] (ms): ', new Date() - start)
     # Hide the gritsOverlay indicator
-    Template.gritsOverlay.hide()
-
+    Session.set 'loading', false
     # Determine if the router set the simId in the url
     simId = Session.get(GritsConstants.SESSION_KEY_SHARED_SIMID)
     if !_.isUndefined(simId)

@@ -1,5 +1,5 @@
 template(name='loading')
-  #filterLoading
-    .spinner
-      img.grits-loading(src="images/flirt-loading.gif")
-      p Loading
+  if isFiltering
+    #filterLoading
+      .spinner
+        img.grits-loading(src="images/flirt-loading.gif")
