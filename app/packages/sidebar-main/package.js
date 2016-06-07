@@ -13,7 +13,8 @@ Package.onUse(function(api) {
     'mquandalle:jade@0.4.9',
     'stylus',
     'reactive-var',
-    'sidebar'
+    'sidebar',
+    'stevenn:hintcss'
   ], 'client');
 
   api.addFiles([
