@@ -339,12 +339,12 @@ Template.gritsSearch.onRendered ->
     # update the ajax-loader
     isUpdating = Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)
     # do not show the filter spinner if the overlay isLoading
-    if isUpdating && !Template.gritsOverlay.isLoading()
+    if isUpdating and not Session.get 'loading'
       $('#applyFilter').prop('disabled', true)
-      $('#filterLoading').show()
+      Session.set 'filtering', true
     else
       $('#applyFilter').prop('disabled', false)
-      $('#filterLoading').hide()
+      Session.set 'filtering', false
 
   Meteor.autorun ->
     mode = Session.get(GritsConstants.SESSION_KEY_MODE)

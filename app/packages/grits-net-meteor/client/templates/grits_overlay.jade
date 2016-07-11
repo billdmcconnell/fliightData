@@ -1,4 +1,6 @@
 template(name='gritsOverlay')
-  .grits-overlay
-    .grits-loading
-      p Loading
+  .grits-overlay(
+    class="{{#if showCurtain}} grits-overlay--visible{{/if}} {{#if isLoaded}} grits-overlay--hidden{{/if}}")
+      .spinner
+        img.grits-loading(src="images/flirt-loading.gif")
+        p Loading
