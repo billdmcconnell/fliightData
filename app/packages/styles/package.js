@@ -10,4 +10,5 @@ Package.onUse(function(api) {
   api.use('stylus');
 
   api.addFiles('variables.styl', 'client', {isImport: true});
+  api.addFiles('tooltips.styl', 'client', {isImport: true});
 });

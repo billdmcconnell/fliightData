@@ -3,19 +3,36 @@ template(name='mainSidebar')
     // Nav tabs
     .sidebar--tab-container
       ul.sidebar--tabs.list-unstyled
-        li.sidebar--collapse.large(class="{{#unless sideBarOpen}} off-canvas {{/unless}}" role='tab')
+        li.sidebar--collapse.large.hint--right.hint--rounded(
+          class="{{#unless sideBarOpen}} off-canvas {{/unless}}"
+          role='tab'
+          data-hint="{{#if sideBarOpen}}Close {{else}} Open {{/if}} Menu")
           i.fa.fa-chevron-circle-left
 
-        li.pane-control(class="{{#if tabActive 1}} active {{/if}}" role='tab' data-tab="1")
+        li.pane-control.hint--right.hint--rounded(
+          class="{{#if tabActive 1}} active {{/if}}"
+          role='tab'
+          data-tab="1"
+          data-hint="Search")
           i.fa.fa-search
 
-        li.pane-control(class="{{#if tabActive 3}} active {{/if}}" role="tab" data-tab="3")
+        li.pane-control.hint--right.hint--rounded(
+          class="{{#if tabActive 3}} active {{/if}}"
+          role="tab"
+          data-tab="3"
+          data-hint="Filter Results")
           i.fa.fa-sliders
 
-        li.pane-control(class="{{#if tabActive 4}} active {{/if}}" data-tab="4")
+        li.pane-control.hint--right.hint--rounded(
+          class="{{#if tabActive 4}} active {{/if}}"
+          data-tab="4"
+          data-hint="Map Options")
           i.fa.fa-map-o
 
-        li#sidebar-draw-rectangle-tool(class="{{#if drawing}} active {{/if}}" data-tab="2")
+        li#sidebar-draw-rectangle-tool.hint--right.hint--rounded(
+          class="{{#if drawing}} active {{/if}}"
+          data-tab="2"
+          data-hint="Select Search Area")
           i.fa.fa-object-group
 
         li.help-toggle.large.push-to-btm
@@ -30,10 +47,19 @@ template(name='mainSidebar')
       h1.logo FLIRT
       #mode-toggle.btn-group(data-toggle='buttons')
         label.btn.btn-mode.active
-          input(type='radio', name='mode', data-mode='{{MODE_EXPLORE}}', autocomplete='off', checked='')
+          input(
+            type='radio'
+            name='mode'
+            data-mode='{{MODE_EXPLORE}}'
+            autocomplete='off'
+            checked='')
           |  {{_ "mode.explore" }}
         label.btn.btn-mode
-          input(type='radio', name='mode', data-mode='{{MODE_ANALYZE}}', autocomplete='off')
+          input(
+            type='radio'
+            name='mode'
+            data-mode='{{MODE_ANALYZE}}'
+            autocomplete='off')
           |  {{_ "mode.analyze" }}
 
       #sidebar-search.sidebar--pane(class="{{#if paneActive 1}} active {{/if}}")
