@@ -443,8 +443,6 @@ _changeDateHandler = (e) ->
     GritsFilterCriteria.operatingDateRangeEnd.set(date)
     return
 _startSimulation = (e) ->
-  if $(e.target).hasClass('disabled')
-    return
   simPas = parseInt($('#simulatedPassengersInputSlider').slider('getValue'), 10)
   startDate = _discontinuedDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
   endDate = _effectiveDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')

@@ -35,6 +35,9 @@ if Meteor.isClient
       Template.instance().isDrawing.get()
 
   Template.mainSidebar.events
+    'click .logo': (event, instance) ->
+      GritsFilterCriteria.reset()
+
     'click .sidebar--collapse': (event, instance)->
       instance.open.set not instance.open.get()
 

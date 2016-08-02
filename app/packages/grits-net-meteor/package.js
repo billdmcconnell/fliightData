@@ -35,7 +35,7 @@ Package.on_use(function(api){
     'halunka:i18n@1.1.1',
     'momentjs:moment@2.10.6',
     'kadira:flow-router@2.10.1',
-    'zenorocha:clipboard@1.5.8',
+    'zenorocha:clipboard@=1.5.8',
   ]);
   // client only packages
   api.use([

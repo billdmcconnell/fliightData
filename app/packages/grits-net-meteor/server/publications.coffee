@@ -1,7 +1,7 @@
 Future = Npm.require('fibers/future')
 
 _FLIRT_SIMULATOR_URL = process.env.FLIRT_SIMULATOR_URL
-if _FLIRT_SIMULATOR_URL == ''
+if !_FLIRT_SIMULATOR_URL
   throw new Error('You must set FLIRT_SIMULATOR_URL environment variable, ex: http://localhost:45000/simulator')
 
 _useAggregation = true # enable/disable using the aggregation framework
