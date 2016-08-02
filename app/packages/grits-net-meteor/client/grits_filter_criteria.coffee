@@ -69,6 +69,7 @@ class GritsFilterCriteria
 
     # is the simulation running?
     self.isSimulatorRunning = new ReactiveVar(false)
+
     return
   # initialize the start date of the filter 'discontinuedDate'
   #
@@ -83,7 +84,6 @@ class GritsFilterCriteria
     self._baseState = JSON.stringify(query)
     month = start.getMonth() + 1
     date = start.getDate()
-    year = start.getFullYear().toString().slice(2,4)
     year = start.getFullYear()
     yearStr = year.toString().slice(2,4)
     self.operatingDateRangeStart.set(new Date(year, month, date))
@@ -371,7 +371,7 @@ class GritsFilterCriteria
     self = this
 
     # do not allow this to run prior to jQuery/DOM
-    if _.isUndefined($)
+    if _.isUndefined($) || _.isUndefined(Template.gritsSearch)
       return
     discontinuedDatePicker = Template.gritsSearch.getDiscontinuedDatePicker()
     if _.isNull(discontinuedDatePicker)
@@ -410,7 +410,7 @@ class GritsFilterCriteria
     self = this
 
     # do not allow this to run prior to jQuery/DOM
-    if _.isUndefined($)
+    if _.isUndefined($) || _.isUndefined(Template.gritsSearch)
       return
     effectiveDatePicker = Template.gritsSearch.getEffectiveDatePicker()
     if _.isNull(effectiveDatePicker)
@@ -524,12 +524,6 @@ class GritsFilterCriteria
   processSimulation: (simPas, simId) ->
     self = this
 
-    # Prevent multiple invocations on the same simId from generating
-    # duplicated results.
-    if self._processingSimId == simId
-      return
-    self._processingSimId = simId
-
     # get the heatmapLayerGroup
     heatmapLayerGroup = Template.gritsMap.getInstance().getGritsLayerGroup(GritsConstants.HEATMAP_GROUP_LAYER_ID)
     # get the current mode groupLayer
@@ -562,7 +556,7 @@ class GritsFilterCriteria
       heatmapLayerGroup.draw()
     , 500)
 
-    Meteor.subscribe('SimulationItineraries', simId)
+    self.simulationItineraries = Meteor.subscribe('SimulationItineraries', simId)
     options =
       transform: null
 
@@ -590,11 +584,19 @@ class GritsFilterCriteria
         _updateHeatmap()
         _throttledDraw()
 
-    Itineraries.find({'simulationId': simId}, options).observeChanges({
-      added: Meteor.gritsUtil.smoothRate (id, fields) ->
-        _doWork(id, fields)
-    })
+    itineraryQuery = Itineraries.find({'simulationId': simId}, options)
+    numItineraries = itineraryQuery.count()
+
+    if numItineraries == simPas
+      itineraryQuery.forEach Meteor.gritsUtil.smoothRate (itinerary) ->
+          _doWork(itinerary._id, itinerary)
+    else
+      itineraryQuery.observeChanges({
+        added: Meteor.gritsUtil.smoothRate (id, fields) ->
+          _doWork(id, fields)
+      })
     return
+
   # starting a simulation
   startSimulation: (simPas, startDate, endDate) ->
     self = this
@@ -640,5 +642,59 @@ class GritsFilterCriteria
       self.processSimulation(simPas, res.simId)
       return
     )
+
+  # reset the start date of the filter
+  resetStart: () ->
+    self = this
+    start = self._today
+    month = start.getMonth()
+    date = start.getDate()
+    year = start.getFullYear()
+    self.operatingDateRangeStart.set(new Date(year, month, date))
+    return
+  # reset the end date of the filter
+  resetEnd: () ->
+    self = this
+    end = moment(self._today).add(7, 'd').toDate()
+    month = end.getMonth()
+    date = end.getDate()
+    year = end.getFullYear()
+    self.operatingDateRangeEnd.set(new Date(year, month, date))
+    return
+  # resets the filter
+  reset: () ->
+    self = this
+    # reset the departures
+    self.setDepartures null
+
+    # reset the start and end dates
+    self.resetStart()
+    self.resetEnd()
+
+    # reset counters
+    Session.set GritsConstants.SESSION_KEY_LOADED_RECORDS, 0
+    Session.set GritsConstants.SESSION_KEY_TOTAL_RECORDS, 0
+
+    # reset includeNearby
+    $('#includeNearbyAirports').prop 'checked', false
+    $("#includeNearbyAirportsRadius").val 50
+
+    # determine the current mode
+    mode = Session.get GritsConstants.SESSION_KEY_MODE
+    if mode == GritsConstants.MODE_ANALYZE
+      # set isSimulatorRunning to false
+      self.isSimulatorRunning.set(false)
+      # stop any existing subscription
+      if self.simulationItineraries != null
+        self.simulationItineraries.stop()
+        self.simulationItineraries = null;
+
+      # remove disabled class
+      $('#startSimulation').removeClass('disabled')
+      # reset number of passengers
+      $('#simulatedPassengersInputSlider').slider('setValue', 1000)
+      $('#simulatedPassengersInputSliderValIndicator').html(1000)
+      FlowRouter.route('/')
+      return
 
 GritsFilterCriteria = new GritsFilterCriteria() # exports as a singleton
