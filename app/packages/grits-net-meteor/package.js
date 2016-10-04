@@ -68,6 +68,7 @@ Package.on_use(function(api){
     'client/mapper/grits_map.coffee',
     'client/mapper/grits_bounding_box.coffee',
     'client/startup.coffee',
+    'client/postMessageHandler.coffee',
     'client/grits_util.coffee',
     'client/grits_filter_criteria.coffee',
     'client/layers/grits_layer_group.coffee',
