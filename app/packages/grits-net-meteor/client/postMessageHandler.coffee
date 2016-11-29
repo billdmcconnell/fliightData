@@ -4,7 +4,7 @@ postMessageHandler = (event)->
     request = JSON.parse(event.data)
   catch
     return
-  if request.type == "tag"
+  if request.type == "eha.dossierRequest"
     title = "FLIRT"
     url = window.location.toString()
     airports = GritsFilterCriteria.departures.get().join(", ")
@@ -21,9 +21,9 @@ postMessageHandler = (event)->
       else if url.match(/simulation/)
         title = "Simulated passenger flow from #{airports} #{start} to #{end}"
       window.parent.postMessage(JSON.stringify({
+        type: "eha.dossierTag"
         html: """<a href='#{dataUrl}'>Download Data CSV</a><br /><a target="_blank" href='#{url}'>Open FLIRT</a>"""
         title: title
-      }), "*")
-
+      }), event.origin)
 
 window.addEventListener("message", postMessageHandler, false)
