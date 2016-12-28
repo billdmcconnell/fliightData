@@ -16,7 +16,21 @@ $l-gray = rgba(235, 235, 235, 1)
 $m-gray = rgba(204, 204, 204, 1)
 $d-gray = rgba(150, 150, 150, 1)
 
+$primary     = rgba(60, 105, 138, 1)
+$primary-d = $primary-dark = rgba(3, 63, 100, 1)
+$primary-l = $primary-light = lighten($primary, 70%)
+$primary-ll = lighten($primary, 90%)
+$tabs-bg     = alpha($primary, 80%)
+$secondary   = rgba(179, 225, 178, 1)
+$secondary-d = $secondary-dark = darken($secondary, 20%)
+$secondary-l = $secondary-light = lighten($secondary, 70%)
+$secondary-ll = lighten($secondary, 90%)
+
 $sidebar-width = 300px
 $sidebar-tabs-width = 60px
 $data-table-width = 550px
 $data-table-tabs-width = 60px
+
+$tabs-bg = alpha($primary, 80%)
+$tab-selected = $tabs-bg
+$list-selected = lighten(desaturate($secondary, 20%), 10%)
