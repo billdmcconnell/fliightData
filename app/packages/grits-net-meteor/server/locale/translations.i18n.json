@@ -107,7 +107,7 @@
             "en": "Recent changes have not been applied"
         },
         "include-nearby-label": {
-            "en": "Include nearby airports within "
+            "en": "Include airports within "
         },
         "miles-label": {
             "en": "miles"
@@ -213,10 +213,10 @@
             "en": "The URL has been copied to your clipboard"
         },
         "includeNearbyRequired": {
-            "en": "Include nearby airports requires at least one Departure"
+            "en": "Including nearby airports requires at least one Departure"
         },
         "includeNearbyMetaNode": {
-            "en": "Include nearby airports does not work with MetaNodes"
+            "en": "Including nearby airports does not work with MetaNodes"
         },
         "layerLoading": {
             "en": "The layer has not finished loading"
