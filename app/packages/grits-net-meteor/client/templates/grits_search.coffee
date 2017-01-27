@@ -273,8 +273,6 @@ Template.gritsSearch.onCreated ->
 
 # triggered when the 'filter' template is rendered
 Template.gritsSearch.onRendered ->
-  _updatePaneContentHeight()
-  _watchWindowSizeChange()
   departureSearchMain = $('#departureSearchMain').tokenfield({
     typeahead: [{hint: false, highlight: true}, {
       display: (match) ->
@@ -301,8 +299,10 @@ Template.gritsSearch.onRendered ->
   # Note: Meteor.gritsUtil.effectiveDateMinMax is set in startup.coffee
   options = {
     format: 'MM/DD/YY'
-    minDate: Meteor.gritsUtil.effectiveDateMinMax[0],
+    minDate: Meteor.gritsUtil.effectiveDateMinMax[0]
     maxDate: Meteor.gritsUtil.effectiveDateMinMax[1]
+    widgetPositioning:
+      vertical: 'top'
   }
   effectiveDatePicker = $('#effectiveDate').datetimepicker(options)
   _setEffectiveDatePicker(effectiveDatePicker)
@@ -312,8 +312,10 @@ Template.gritsSearch.onRendered ->
   # Note: Meteor.gritsUtil.discontinuedDateMinMax is set in startup.coffee
   options = {
     format: 'MM/DD/YY'
-    minDate: Meteor.gritsUtil.discontinuedDateMinMax[0],
+    minDate: Meteor.gritsUtil.discontinuedDateMinMax[0]
     maxDate: Meteor.gritsUtil.discontinuedDateMinMax[1]
+    widgetPositioning:
+      vertical: 'top'
   }
   discontinuedDatePicker = $('#discontinuedDate').datetimepicker(options)
   _setDiscontinuedDatePicker(discontinuedDatePicker)
@@ -456,23 +458,6 @@ _showThroughput = (e) ->
   GritsFilterCriteria.apply()
   return
 
-_updatePaneContentHeight = ->
-  $searchBar = $('#departureSearchMainSearchBar')
-  $filterWrap = $('.filter-wrapper')
-  $filterFooter = $('.filter-footer')
-  searchBarBottom = $searchBar.height() + $searchBar.offset().top
-  footerTop = $filterFooter.offset().top
-  verticalSpace =  footerTop - searchBarBottom
-  $filterWrap.css 'max-height', "#{verticalSpace}px"
-  if verticalSpace < 0
-    $filterFooter.addClass 'not-visible'
-  else
-    $filterFooter.removeClass 'not-visible'
-
-_watchWindowSizeChange = ->
-  $(window).resize ->
-    _updatePaneContentHeight()
-
 # events
 #
 # Event handlers for the grits_filter.html template
@@ -485,21 +470,26 @@ Template.gritsSearch.events
         return
       GritsFilterCriteria.apply()
     return
+
   'slideStop #simulatedPassengersInputSlider': _changeSimulatedPassengersHandler
+
   'click #startSimulation': _startSimulation
+
   'click #showThroughput': _showThroughput
+
   'change #departureSearchMain': _changeDepartureHandler
+
   'dp.change': _changeDateHandler
+
   'dp.show': (event) ->
-    # in order to not be contained within the scrolling div, the style of the
-    # .bootstrap-datetimepicker-widget.dropdown-menu is set to fixed then we
-    # position it manually below.
     $datetimepicker = $(event.target)
-    height = $datetimepicker.height()
-    top = $datetimepicker.offset().top
-    left = $datetimepicker.offset().left
-    $('.bootstrap-datetimepicker-widget.dropdown-menu').css({top: top + height, left: left})
-    return
+    offset = $datetimepicker.offset()
+    bottomPosition = window.innerHeight - offset.top
+    $('.bootstrap-datetimepicker-widget.dropdown-menu').css
+      bottom: bottomPosition + 5 # Add height of arrow
+      top: 'auto'
+      left: offset.left
+
   'click #includeNearbyAirports': (event) ->
     miles = parseInt($("#includeNearbyAirportsRadius").val(), 10)
     departures = GritsFilterCriteria.departures.get()
@@ -528,19 +518,23 @@ Template.gritsSearch.events
       departureSearch = getDepartureSearchMain()
       departureSearch.tokenfield('setTokens', departures)
     return
+
   'click #toggleFilter': (e) ->
     $self = $(e.currentTarget)
     $("#filter").toggle("fast")
     return
+
   'click #applyFilter': (event, template) ->
     GritsFilterCriteria.apply()
     return
+
   'click #loadMore': ->
     GritsFilterCriteria.setOffset()
     mode = Session.get(GritsConstants.SESSION_KEY_MODE)
     if mode == GritsConstants.MODE_EXPLORE
       GritsFilterCriteria.more()
     return
+
   'tokenfield:initialize': (e) ->
     $target = $(e.target)
     $container = $target.closest('.tokenized')
@@ -557,6 +551,7 @@ Template.gritsSearch.events
       $container.find('.token-input.tt-input').val("")
     )
     return
+
   'tokenfield:createtoken': (e) ->
     $target = $(e.target)
     $container = $target.closest('.tokenized')
@@ -567,11 +562,13 @@ Template.gritsSearch.events
       $target.closest('.tokenized').find('.token-input.tt-input').val("")
       e.preventDefault()
     return
+
   'tokenfield:createdtoken': (e) ->
     $target = $(e.target)
     tokens = $target.tokenfield('getTokens')
     token = e.attrs.label
     return false
+
   'tokenfield:removedtoken': (e) ->
     $target = $(e.target)
     tokens = $target.tokenfield('getTokens')

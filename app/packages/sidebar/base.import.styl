@@ -65,12 +65,17 @@ if $sidebar-main-menu-width == 0
 
 .sidebar--content
   height 100vh
+  position relative
   margin-right $sidebar-main-menu-width
+  display flex
+  flex-direction column
 
 .sidebar--pane
   display none
+  flex 1 1 auto
+  flex-direction column
   &.active
-    display block
+    display flex
   h2
     background $tabs-bg
     margin 0
@@ -91,10 +96,7 @@ if $sidebar-main-menu-width == 0
       transform rotate(180deg)
 
 .filter-footer
-  position absolute
-  bottom 0
-  z-index 100
-  width 'calc(100% - %s)' % $sidebar-main-menu-width
+  margin-top auto
 
 .help-toggle
   position absolute
