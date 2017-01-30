@@ -260,7 +260,7 @@ class GritsFilterCriteria
       Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
       return
 
-    if !query.hasOwnProperty('departureAirport._id')
+    if Object.keys(query).every((k)-> !k.startsWith('departureAirport'))
       toastr.error(i18n.get('toastMessages.departureRequired'))
       Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
       return
@@ -276,75 +276,50 @@ class GritsFilterCriteria
     )
 
     # handle any metaNodes
-    tokens = query['departureAirport._id']['$in']
-    modifiedTokens = []
-    _.each(tokens, (token) ->
-      if (token.indexOf(GritsMetaNode.PREFIX) >= 0)
-        node = GritsMetaNode.find(token)
-        if node == null
-          return
-        if (node.hasOwnProperty('_children'))
-          modifiedTokens = _.union(modifiedTokens, _.pluck(node._children, '_id'))
-      else
-        modifiedTokens = _.union(modifiedTokens, token)
-    )
-    query['departureAirport._id']['$in'] = modifiedTokens
+    if query['departureAirport._id']
+      tokens = query['departureAirport._id']['$in']
+      modifiedTokens = []
+      _.each(tokens, (token) ->
+        if (token.indexOf(GritsMetaNode.PREFIX) >= 0)
+          node = GritsMetaNode.find(token)
+          if node == null
+            return
+          if (node.hasOwnProperty('_children'))
+            modifiedTokens = _.union(modifiedTokens, _.pluck(node._children, '_id'))
+        else
+          modifiedTokens = _.union(modifiedTokens, token)
+      )
+      query['departureAirport._id']['$in'] = modifiedTokens
 
     # show the loading indicator and call the server-side method
     Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, true)
-    async.auto({
-      # get the totalRecords count first
-      'getCount': (callback, result) ->
-        Meteor.call('countFlightsByQuery', query, (err, totalRecords) ->
-          if (err)
-            callback(err)
-            return
-
-          if Meteor.gritsUtil.debug
-            console.log 'totalRecords: ', totalRecords
-
-          Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, totalRecords)
-          callback(null, totalRecords)
-        )
-      # when count is finished, get the flights if greater than 0
-      'getFlights': ['getCount', (callback, result) ->
-        totalRecords = result.getCount
-
-        if totalRecords.length <= 0
-          toastr.info(i18n.get('toastMessages.noResults'))
-          Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
-          callback(null)
-          return
-
-        Meteor.call('flightsByQuery', query, (err, flights) ->
-          if (err)
-            callback(err)
-            return
-
-          if _.isUndefined(flights) || flights.length <= 0
-            toastr.info(i18n.get('toastMessages.noResults'))
-            Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
-            callback(null, [])
-            return
-
-          callback(null, flights)
-        )
-      ]
-    }, (err, result) ->
+    Meteor.call('flightsByQuery', query, (err, result) ->
       if err
         Meteor.gritsUtil.errorHandler(err)
         return
-      # if there hasn't been any errors, getCount and getFlights will
-      # have completed
-      flights = result.getFlights
+      
+      {totalRecords, flights} = result
+      
+      if Meteor.gritsUtil.debug
+        console.log 'totalRecords: ', totalRecords
+
+      Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, totalRecords)
+
+      if totalRecords.length <= 0
+        toastr.info(i18n.get('toastMessages.noResults'))
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        return
+
+      if _.isUndefined(flights) || flights.length <= 0
+        toastr.info(i18n.get('toastMessages.noResults'))
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        return
       # call the original callback function if its defined
       if cb && _.isFunction(cb)
         cb(null, flights)
       # process the flights
       self.process(flights)
-      return
     )
-    return
   # applies the filter; resets loadedRecords, and totalRecords
   #
   # @param [Function] cb, the callback function
@@ -428,7 +403,11 @@ class GritsFilterCriteria
 
     if _.isEqual(date.toISOString(), effectiveDate)
       # the reactive var is already set, change is from the UI
-      self.createOrUpdate('effectiveDate', {key: 'effectiveDate', operator: '$lte', value: effectiveDate})
+      self.createOrUpdate('effectiveDate', {
+        key: 'effectiveDate'
+        operator: '$lte'
+        value: effectiveDate
+      })
     else
       effectiveDatePicker.data('DateTimePicker').date(date)
       self.operatingDateRangeEnd.set(date)
@@ -465,14 +444,27 @@ class GritsFilterCriteria
         self.remove('departure')
         return
       if _.isArray(code)
-        capsCodes = []
-        for _id in code
-          capsCodes.push _id.toUpperCase()
-        if !_.isEqual(capsCodes, code)
-          Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', capsCodes)
-        self.createOrUpdate('departure', {key: 'departureAirport._id', operator: '$in', value: capsCodes})
+        codes = code
       else
-        self.createOrUpdate('departure', {key: 'departureAirport._id', operator: '$in', value: [code]})
+        codes = [code]
+      departures = []
+      groupedCodes = _.chain(codes)
+        .map (_id)->
+          if _.contains(_id, ":")
+            [field, value] = _id.split(":")
+            field: 'departureAirport.' + field
+            value: value
+          else
+            field:'departureAirport._id'
+            value: _id.toUpperCase()
+        .groupBy('field')
+        .value()
+      for field, values of groupedCodes
+        self.createOrUpdate('departure', {
+          key: field
+          operator: '$in'
+          value: values.map (v)-> v.value
+        })
     else
       if _.isNull(code)
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [])

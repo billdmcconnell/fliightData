@@ -10,16 +10,7 @@ _effectiveDatePicker = null # onRendered will set this to a datetime picker obje
 _discontinuedDatePicker = null # onRendered will set this to a datetime picker object
 _matchSkip = null # the amount to skip during typeahead pagination
 _simulationProgress = new ReactiveVar(0)
-_suggestionTemplate = _.template('
-  <span class="airport-code"><%= raw._id %></span>
-  <span class="airport-info">
-    <%= raw.name %>
-    <% if (display) { %>
-      <span class="additional-info">
-        <span><%= display %>:</span> <%= value %>
-      <span>
-    <% } %>
-  </span>')
+
 # Unfortunately we need to result to jQuery as twitter's typeahead plugin does
 # not allow us to pass in a custom context to the footer.  <%= obj.query %> and
 # <%= obj.isEmpty %> are the only things available.
@@ -110,6 +101,23 @@ _determineFieldMatchesByWeight = (input, res) ->
 
   matches = []
   for obj in res
+    if obj.propertyMatch
+      propertyLabel = switch obj.propertyMatch
+        when "countryName" then "Country Name"
+        when "stateName" then "State Name"
+        when "city" then "City Name"
+        else
+          obj.propertyMatch
+      matches.push
+        label: "#{obj.propertyMatch}:" + obj._id
+        value: "#{propertyLabel}: " + obj._id
+        field: obj.propertyMatch
+        propertyMatch:
+          "#{obj.propertyMatch}": true
+        weight: 100
+        display: obj._id
+        raw: obj
+      continue
     # get the typeahead matcher from the Astro Class, contains weight, display
     # and regexOptions
     typeaheadMatcher = Airport.typeaheadMatcher()
@@ -150,64 +158,61 @@ _determineFieldMatchesByWeight = (input, res) ->
 # method to generate suggestions and drive the pagination feature
 _suggestionGenerator = (query, skip, callback) ->
   _matchSkip = skip
-  Meteor.call('typeaheadAirport', query, skip, (err, res) ->
-    Meteor.call('countTypeaheadAirports', query, (err, count) ->
-      if res.length > 0
-        matches = _determineFieldMatchesByWeight(query, res)
-        # expects an array of objects with keys [label, value]
-        callback(matches)
+  Meteor.call('typeaheadAirport', query, skip, (err, {results, count}) ->
+    res = results
+    if res.length > 0
+      matches = _determineFieldMatchesByWeight(query, res)
+      # expects an array of objects with keys [label, value]
+      callback(matches)
 
-      # keep going to update the _typeaheadFooter via jQuery
-      # update the record count
-      if count > 1
-        if (_matchSkip + 10) > count
-          diff = (_matchSkip + 10) - count
-          $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+(10-diff)} of #{count}</span>")
-        else
-          $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+10} of #{count}</span>")
-      else if count == 1
-        $('#suggestionCount').html("<span>#{count} match found</span>")
+    # keep going to update the _typeaheadFooter via jQuery
+    # update the record count
+    if count > 1
+      if (_matchSkip + 10) > count
+        diff = (_matchSkip + 10) - count
+        $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+(10-diff)} of #{count}</span>")
       else
-        $('.tt-suggestions').empty()
-        $('#suggestionCount').html("<span>No matches found</span>")
+        $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+10} of #{count}</span>")
+    else if count == 1
+      $('#suggestionCount').html("<span>#{count} match found</span>")
+    else
+      $('.tt-suggestions').empty()
+      $('#suggestionCount').html("<span>No matches found</span>")
 
-      # enable/disable the pager elements
-      if count <= 10
-        $('.next-suggestions').addClass('disabled')
+    # enable/disable the pager elements
+    if count <= 10
+      $('.next-suggestions').addClass('disabled')
+      $('.previous-suggestions').addClass('disabled')
+    if count > 10
+      # edge case min
+      if _matchSkip == 0
         $('.previous-suggestions').addClass('disabled')
-      if count > 10
-        # edge case min
-        if _matchSkip == 0
-          $('.previous-suggestions').addClass('disabled')
-        # edge case max
-        if (count - _matchSkip) <= 10
-          $('.next-suggestions').addClass('disabled')
+      # edge case max
+      if (count - _matchSkip) <= 10
+        $('.next-suggestions').addClass('disabled')
 
-      # bind click handlers
-      if !$('.previous-suggestions').hasClass('disabled')
-        $('#previousSuggestions').bind('click', (e) ->
-          e.preventDefault()
-          e.stopPropagation()
-          if count <= 10 || _matchSkip <= 10
-            _matchSkip = 0
-          else
-            _matchSkip -= 10
-          _suggestionGenerator(query, _matchSkip, callback)
-        )
-      if !$('.next-suggestions').hasClass('disabled')
-        $('#forwardSuggestions').bind('click', (e) ->
-          e.preventDefault()
-          e.stopPropagation()
-          if count <= 10
-            _matchSkip 0
-          else
-            _matchSkip += 10
-          _suggestionGenerator(query, _matchSkip, callback)
-          return
-        )
-      return
-    )
-    return
+    # bind click handlers
+    if !$('.previous-suggestions').hasClass('disabled')
+      $('#previousSuggestions').bind('click', (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        if count <= 10 || _matchSkip <= 10
+          _matchSkip = 0
+        else
+          _matchSkip -= 10
+        _suggestionGenerator(query, _matchSkip, callback)
+      )
+    if !$('.next-suggestions').hasClass('disabled')
+      $('#forwardSuggestions').bind('click', (e) ->
+        e.preventDefault()
+        e.stopPropagation()
+        if count <= 10
+          _matchSkip 0
+        else
+          _matchSkip += 10
+        _suggestionGenerator(query, _matchSkip, callback)
+        return
+      )
   )
   return
 
@@ -280,7 +285,7 @@ Template.gritsSearch.onRendered ->
           return
         return match.label
       templates:
-        suggestion: _suggestionTemplate
+        suggestion: (x)-> Blaze.toHTMLWithData(Template.suggestionTemplate, x)
         footer: _typeaheadFooter
       source: (query, callback) ->
         _suggestionGenerator(query, 0, callback)
