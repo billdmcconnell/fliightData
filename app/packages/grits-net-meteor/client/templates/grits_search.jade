@@ -11,14 +11,13 @@ template(name='gritsSearch')
           name='departureSearchMain'
           placeholder='{{_ "gritsSearch.tokenfield-placeholder"}}')
     .filter-wrapper
-      .filter-row
-        .col-xs-12.text-center
-          input#includeNearbyAirports(type='checkbox', name='includeNearbyAirports')
-          span {{_ "gritsSearch.include-nearby-label"}}
+      .filter-row.nearby
+        input#includeNearbyAirports(type='checkbox', name='includeNearbyAirports')
+        span {{_ "gritsSearch.include-nearby-label"}}
 
-          input#includeNearbyAirportsRadius.input-sm(
-            type='number', min='1', max='500', value='50')
-          span {{_ "gritsSearch.miles-label"}}
+        input#includeNearbyAirportsRadius.input-sm(
+          type='number', min='1', max='500', value='50')
+        span {{_ "gritsSearch.miles-label"}}
 
       .filter-row
         .filter-group

@@ -561,8 +561,9 @@ canvas
   border-radius 0
 
 .filter
-  display table;
-  height 100%
+  display flex
+  flex-direction column
+  flex 1 1 auto
 
 .filter-header
   background-color #eee
@@ -583,14 +584,45 @@ canvas
   font-size .8em
 
 .filter-wrapper
+  flex 1 1 auto
   padding 0 25px 25px
   overflow-y auto
+
+.nearby
+  display flex
+  align-items center
+  justify-content center
+  width calc(100% + 50px)
+  margin-right -25px
+  margin-left -25px
+  input
+    margin-left 3px
+    margin-right 3px
 
 .filter-row
   display inline-block
   width 100%
   margin-top 10px
   margin-bottom 10px
+  &.nearby
+    display flex
+    align-items center
+    justify-content center
+    width calc(100% + 50px)
+    margin-right -25px
+    margin-left -25px
+    font-size .9em
+    input[type=number]
+      margin-left 5px
+      margin-right 5px
+      box-shadow none
+      border 1px solid $m-gray
+      padding 5px
+      text-align center
+    input[type=checkbox]
+      margin-top 0
+      margin-right 5px
+      margin-left 0
   .progress
     margin-bottom 0
 
