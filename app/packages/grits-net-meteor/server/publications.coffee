@@ -188,27 +188,11 @@ flightsByQuery = (query, limit, skip) ->
   # make sure dates are set
   extendQuery(query, null)
 
-  # Do an initial query of the airports collection to get a list of airport
-  # ids with matching properties.
-  newQuery = {}
-  airportQuery = {}
-  for key, value of query
-    if key.startsWith('departureAirport.')
-      airportQuery[key.split('departureAirport.')[1]] = value
-    else
-      newQuery[key] = value
-  airportIds = Airports.find(airportQuery).map (x)->x._id
-  newQuery['departureAirport._id'] = {$in: airportIds}
-  query = newQuery
-
   matches = []
   matches = Flights.find(query, {
     limit: limit
     skip: skip
     transform: null
-    # sort:
-    #   # This is done to scramble the results
-    #   effectiveDate: 1
   }).fetch()
   totalRecords = Flights.find(query, {transform: null}).count()
   matches = _calculateSeatsOverInterval(matches, query)

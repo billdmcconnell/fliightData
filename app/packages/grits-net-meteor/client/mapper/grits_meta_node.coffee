@@ -28,23 +28,23 @@ class GritsMetaNode extends GritsNode
 
     self.name = 'GritsMetaNode'
 
-    if typeof options != 'undefined'
-      self._options = options
-    else
-      self._options =
-        box:
-          'stroke': '#333'
-          'stroke-width': 2
-          'stroke-opacity': 0.75
-          'fill': '#333'
-          'fill-opacity': 0.35
-        label:
-          fontSize: 8
-
+    self._options = _.extend(
+      box:
+        'stroke': '#333'
+        'stroke-width': 2
+        'stroke-opacity': 0.75
+        'fill': '#333'
+        'fill-opacity': 0.35
+      label:
+        fontSize: 8
+    , options or {})
     self.fontSize = self._options.label.fontSize
     self.labelMetrics = self.getTextMetrics(self._children.length+'')
-    self._id = GritsMetaNode.PREFIX + _nextNum
-    _nextNum += 1
+    if options?._id
+      self._id = options._id
+    else
+      self._id = GritsMetaNode.PREFIX + _nextNum
+      _nextNum += 1
     _metaNodes[self._id] = self
     return
   # Uses canvas.measureText to compute and return the width of the given text of given font in pixels.
@@ -89,12 +89,14 @@ GritsMetaNode.find = (id) ->
   else
     return null
 # resets the set of metanodes
-GritsMetaNode.reset = () ->
+GritsMetaNode.reset = ->
   _metaNodes = {}
-  return
+# resets property metanodes
+GritsMetaNode.resetPropertyNodes = ->
+  _metaNodes = _.object([k, v] for k, v of _metaNodes when !_.contains(k, ":"))
 
 # factory method for creating an instance of GritsMetaNode
-GritsMetaNode.create = (nodes) ->
+GritsMetaNode.create = (nodes, _id=null) ->
   # metaNodeData, an object containing information about the metaNode.  At a
   # minimum '_id' and geoJSON loc.coordinates are requried.
   metaNodeData =
@@ -113,7 +115,7 @@ GritsMetaNode.create = (nodes) ->
   # create the instance or catch the error
   try
     marker = new GritsMarker(28, 28, GritsNodeLayer.colorScale)
-    metaNode = new GritsMetaNode(nodes, metaNodeData, marker)
+    metaNode = new GritsMetaNode(nodes, metaNodeData, marker, _id: _id)
   catch e
     metaNode = {error: true, message: e.message}
   return metaNode

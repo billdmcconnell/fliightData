@@ -558,65 +558,66 @@ class GritsNodeLayer extends GritsLayer
   # @return [Array] array containing the [originNode, destinationNode]
   convertFlight: (flight, level, originTokens) ->
     self = this
-
-    # container to be populated with set of metanode's children
-    metaNodeChildren = {}
-    # does a metaToken exist in the originTokens from GritsFilterCriteria?
-    metaToken = _.find(originTokens, (token) -> return token.indexOf(GritsMetaNode.PREFIX) >= 0)
-    if typeof metaToken != 'undefined'
-      # metanodes are previously created by the GritsBoundingBox
-      metaNode = GritsMetaNode.find(metaToken)
-      if metaNode != null
-        # set eventHandlers
-        if metaNode.hasOwnProperty('eventHandlers')
-          if Object.keys(metaNode.eventHandlers) <= 0
-            metaNode.setEventHandlers(_eventHandlers)
-        # add metanode to the layer data
-        self._data[metaToken] = metaNode
-        # metanodes are always origins
-        metaNode.isOrigin = true
-        # place children into a set
-        _.each(metaNode._children, (child) ->
-          tokens = metaNodeChildren[child._id]
-          if typeof tokens == 'undefined'
-            tokens = {}
-          tokens[metaToken] = metaToken
-          metaNodeChildren[child._id] = tokens
-        )
-
+    origin = _.findWhere(Meteor.gritsUtil.airports,
+      _id:flight.departureAirport._id
+    )
+    destination = _.findWhere(Meteor.gritsUtil.airports,
+      _id: flight.arrivalAirport._id
+    )
+    metaTokens = _.filter originTokens, (token) ->
+      if token.indexOf(GritsMetaNode.PREFIX) >= 0
+        true
+      else if _.contains(token, ':')
+        true
+      else
+        false
+    metaToken = null
+    metaNode = null
     originNode = null
     destinationNode = null
-    # the departureAirport of the flight
-    origin = _.find(Meteor.gritsUtil.airports, (airport) -> return airport._id == flight.departureAirport._id)
-    if (typeof origin != 'undefined' and origin != null and origin.hasOwnProperty('_id'))
-      if origin._id in Object.keys(metaNodeChildren)
-        node = self._data[metaToken]
-        node.level = level
-        node.sumThroughput(flight)
-        originNode = node
-      else
-        originNode = self._data[origin._id]
-        if (typeof originNode == 'undefined' or originNode == null)
-          try
-            marker = new GritsMarker(_size[0], _size[1], _colorScale, _widthScale)
-            originNode = new GritsNode(origin, marker)
-            originNode.level = level
-            originNode.setEventHandlers(_eventHandlers)
-            originNode.sumThroughput(flight)
-            if originNode._id in originTokens
-              originNode.isOrigin = true
-          catch e
-            console.error(e.message)
-            return [null, null]
-          self._data[origin._id] = originNode
-        else
+    # Find the first metaNode that contains the origin
+    for metaToken in metaTokens
+      if not metaToken
+        continue
+      # metanodes are previously created by the GritsBoundingBox
+      metaNode = GritsMetaNode.find(metaToken)
+      if not metaNode
+        continue
+      if _.findWhere(metaNode._children, _id:origin?._id)
+        break
+    if metaNode
+      # set eventHandlers
+      if metaNode.hasOwnProperty('eventHandlers')
+        if Object.keys(metaNode.eventHandlers) <= 0
+          metaNode.setEventHandlers(_eventHandlers)
+      # add metanode to the layer data
+      self._data[metaToken] = metaNode
+      # metanodes are always origins
+      metaNode.isOrigin = true
+      originNode = self._data[metaToken]
+      originNode.level = level
+      originNode.sumThroughput(flight)
+    else if origin?.hasOwnProperty('_id')
+      originNode = self._data[origin._id]
+      if not originNode
+        try
+          marker = new GritsMarker(_size[0], _size[1], _colorScale, _widthScale)
+          originNode = new GritsNode(origin, marker)
+          originNode.level = level
+          originNode.setEventHandlers(_eventHandlers)
           originNode.sumThroughput(flight)
+          if originNode._id in originTokens
+            originNode.isOrigin = true
+        catch e
+          console.error(e.message)
+          return [null, null]
+        self._data[origin._id] = originNode
+      else
+        originNode.sumThroughput(flight)
 
-    # the arrivalAirport of the flight
-    destination = _.find(Meteor.gritsUtil.airports, (airport) -> return airport._id == flight.arrivalAirport._id)
-    if (typeof destination != "undefined" and destination != null and destination.hasOwnProperty('_id'))
+    if destination?.hasOwnProperty('_id')
       destinationNode = self._data[destination._id]
-      if (typeof destinationNode == "undefined" or destinationNode == null)
+      if not destinationNode
         try
           marker = new GritsMarker(_size[0], _size[1], _colorScale, _widthScale)
           destinationNode = new GritsNode(destination, marker)
@@ -624,7 +625,11 @@ class GritsNodeLayer extends GritsLayer
           # if the originNode is a metaNode, check the destination to be within
           # its bounds, if so discard.
           if originNode instanceof GritsMetaNode
-            if originNode.bounds.contains(new L.LatLng(destinationNode.latLng[0], destinationNode.latLng[1]))
+            destLatLng = new L.LatLng(
+              destinationNode.latLng[0],
+              destinationNode.latLng[1]
+            )
+            if originNode.bounds.contains(destLatLng)
               return [null, null]
 
           destinationNode.level = level

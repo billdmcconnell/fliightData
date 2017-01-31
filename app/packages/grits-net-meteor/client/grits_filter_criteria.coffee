@@ -276,30 +276,54 @@ class GritsFilterCriteria
     )
 
     # handle any metaNodes
-    if query['departureAirport._id']
-      tokens = query['departureAirport._id']['$in']
-      modifiedTokens = []
-      _.each(tokens, (token) ->
-        if (token.indexOf(GritsMetaNode.PREFIX) >= 0)
-          node = GritsMetaNode.find(token)
-          if node == null
-            return
-          if (node.hasOwnProperty('_children'))
-            modifiedTokens = _.union(modifiedTokens, _.pluck(node._children, '_id'))
-        else
-          modifiedTokens = _.union(modifiedTokens, token)
-      )
-      query['departureAirport._id']['$in'] = modifiedTokens
-
+    tokens = query['departureAirport._id']?['$in'] or []
+    modifiedTokens = []
+    _.each(tokens, (token) ->
+      if (token.indexOf(GritsMetaNode.PREFIX) >= 0)
+        node = GritsMetaNode.find(token)
+        if node == null
+          return
+        if (node.hasOwnProperty('_children'))
+          modifiedTokens = _.union(modifiedTokens, _.pluck(node._children, '_id'))
+      else
+        modifiedTokens = _.union(modifiedTokens, token)
+    )
+    
+    # Clear all the property meta-nodes and recreate them.
+    GritsMetaNode.resetPropertyNodes()
+    console.log 1
+    allNodes = Template.gritsMap.getInstance()
+      .getGritsLayerGroup(GritsConstants.ALL_NODES_GROUP_LAYER_ID)
+      .getNodeLayer().getNodes()
+    for prop in ['stateName', 'countryName', 'city']
+      names = query['departureAirport.' + prop]
+      if names
+        delete query['departureAirport.' + prop]
+        names['$in'].forEach (name)->
+          airportIds = _.chain(Meteor.gritsUtil.airports)
+            .map((airport)->
+              if airport[prop] == name
+                [airport._id, true]
+              else
+                null
+            )
+            .compact()
+            .object()
+            .value()
+          filteredNodes = allNodes.filter (x)->airportIds[x._id]
+          metaNode = GritsMetaNode.create(filteredNodes, "#{prop}:#{name}")
+          modifiedTokens = _.union(modifiedTokens, _.keys(airportIds))
+    if modifiedTokens.length > 0
+      query['departureAirport._id'] = {$in: modifiedTokens}
     # show the loading indicator and call the server-side method
     Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, true)
+    console.log query
     Meteor.call('flightsByQuery', query, (err, result) ->
       if err
         Meteor.gritsUtil.errorHandler(err)
         return
-      
       {totalRecords, flights} = result
-      
+
       if Meteor.gritsUtil.debug
         console.log 'totalRecords: ', totalRecords
 
@@ -459,6 +483,7 @@ class GritsFilterCriteria
             value: _id.toUpperCase()
         .groupBy('field')
         .value()
+
       for field, values of groupedCodes
         self.createOrUpdate('departure', {
           key: field
