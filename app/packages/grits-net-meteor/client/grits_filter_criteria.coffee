@@ -248,7 +248,7 @@ class GritsFilterCriteria
   # applies the filter
   #
   # @param [Function] cb, the callback function
-  more: (cb) ->
+  more: (cb, limit=3000) ->
     # applying the filter is always EXPLORE mode
     Session.set(GritsConstants.SESSION_KEY_MODE, GritsConstants.MODE_EXPLORE)
 
@@ -276,11 +276,17 @@ class GritsFilterCriteria
 
     # show the loading indicator and call the server-side method
     Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, true)
-    Meteor.call('flightsByQuery', query, (err, result) =>
+    Meteor.call('flightsByQuery', query, limit, (err, result) =>
       if err
         Meteor.gritsUtil.errorHandler(err)
         return
       {totalRecords, flights} = result
+      if totalRecords > limit and limit != 0
+        if confirm("""
+        There are #{totalRecords} flights for this query.
+        Do you want to load them all?
+        """)
+          return @more(cb, limit=0)
 
       if Meteor.gritsUtil.debug
         console.log 'totalRecords: ', totalRecords
