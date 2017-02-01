@@ -253,7 +253,6 @@ class GritsFilterCriteria
     Session.set(GritsConstants.SESSION_KEY_MODE, GritsConstants.MODE_EXPLORE)
 
     query = @getQueryObject()
-    console.log query
     if _.isUndefined(query) or _.isEmpty(query)
       toastr.error(i18n.get('toastMessages.departureRequired'))
       Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
@@ -441,29 +440,30 @@ class GritsFilterCriteria
         .getGritsLayerGroup(GritsConstants.ALL_NODES_GROUP_LAYER_ID)
         .getNodeLayer().getNodes()
 
-      parsedCodes = _.chain(codes).map (_id)->
-        if _.contains(_id, ":")
-          [field, value] = _id.split(":")
-          airportIds = _.chain(Meteor.gritsUtil.airports)
-            .map((airport)->
-              if airport[field] == value
-                [airport._id, true]
-              else
-                null
-            )
-            .compact()
-            .object()
-            .value()
-          filteredNodes = allNodes.filter (x)->airportIds[x._id]
-          metaNode = GritsMetaNode.create(filteredNodes, _id)
-          return Object.keys(airportIds)
-        else if _id.indexOf(GritsMetaNode.PREFIX) >= 0
-          node = GritsMetaNode.find(_id)
-          return _.pluck(node?._children or [], '_id')
-        else
-          return [_id.toUpperCase()]
-      .flatten()
-      .value()
+      parsedCodes = _.chain(codes)
+        .map (_id)->
+          if _.contains(_id, ":")
+            [field, value] = _id.split(":")
+            airportIds = _.chain(Meteor.gritsUtil.airports)
+              .map((airport)->
+                if airport[field] == value
+                  [airport._id, true]
+                else
+                  null
+              )
+              .compact()
+              .object()
+              .value()
+            filteredNodes = allNodes.filter (x)->airportIds[x._id]
+            metaNode = GritsMetaNode.create(filteredNodes, _id)
+            return Object.keys(airportIds)
+          else if _id.indexOf(GritsMetaNode.PREFIX) >= 0
+            node = GritsMetaNode.find(_id)
+            return _.pluck(node?._children or [], '_id')
+          else
+            return [_id.toUpperCase()]
+        .flatten()
+        .value()
       @createOrUpdate('departure', {
         key: 'departureAirport._id'
         operator: '$in'

@@ -40,8 +40,6 @@ Template.gritsElementDetails.helpers({
     if n instanceof GritsMetaNode
       return 'N/A'
     node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
-    if not node
-      console.log "???", n
     return node.countryName
   getNodeGlobalRegion: (n) ->
     if _.isUndefined(n)
