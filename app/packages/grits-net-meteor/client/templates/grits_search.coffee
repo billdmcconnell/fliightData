@@ -33,18 +33,18 @@ _typeaheadFooter = _.template('
     </div>
   </div>')
 
-# returns the first origin within GritsFilterCriteria
-#
-# @return [String] origin, a string airport IATA code
-getOrigin = ->
-  query = GritsFilterCriteria.getQueryObject()
-  if _.has(query, 'departureAirport._id')
-    # the filter has an array of airports
-    if _.has(query['departureAirport._id'], '$in')
-      origins = query['departureAirport._id']['$in']
-      if _.isArray(origins) and origins.length > 0
-        return origins[0]
-  return null
+# # returns the first origin within GritsFilterCriteria
+# #
+# # @return [String] origin, a string airport IATA code
+# getOrigin = ->
+#   query = GritsFilterCriteria.getQueryObject()
+#   if _.has(query, 'departureAirport._id')
+#     # the filter has an array of airports
+#     if _.has(query['departureAirport._id'], '$in')
+#       origins = query['departureAirport._id']['$in']
+#       if _.isArray(origins) and origins.length > 0
+#         return origins[0]
+#   return null
 
 # returns the typeahead object for the '#departureSearchMain' input
 #
@@ -270,7 +270,7 @@ Template.gritsSearch.onCreated ->
   # Public API
   # Currently we declare methods above for documentation purposes then assign
   # to the Template.gritsSearch as a global export
-  Template.gritsSearch.getOrigin = getOrigin
+  # Template.gritsSearch.getOrigin = getOrigin
   Template.gritsSearch.getDepartureSearchMain = getDepartureSearchMain
   Template.gritsSearch.getEffectiveDatePicker = getEffectiveDatePicker
   Template.gritsSearch.getDiscontinuedDatePicker = getDiscontinuedDatePicker
