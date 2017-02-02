@@ -1,0 +1,15 @@
+template(name="gritsConfirmModal")
+  .confirm--modal.modal.fade(tabindex='-1', role='dialog')
+    .modal-dialog
+      .modal-content
+        button.close(type='button', data-dismiss='modal', aria-label='Close')
+          i.fa.fa-times-circle(aria-hidden='true')
+        .modal-header
+          h1 Load all flights?
+
+        .modal-body
+          p There are #[b #{totalRecords}] flights for this query.
+
+        .modal-footer
+          button.btn.btn-confirm.load-all Load all Flights
+          button.btn.btn-default.cancel Cancel

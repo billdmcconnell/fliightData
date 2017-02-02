@@ -275,17 +275,20 @@ class GritsFilterCriteria
 
     # show the loading indicator and call the server-side method
     Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, true)
-    Meteor.call('flightsByQuery', query, limit, (err, result) =>
+    Meteor.call 'flightsByQuery', query, limit, (err, result) =>
       if err
         Meteor.gritsUtil.errorHandler(err)
         return
       {totalRecords, flights} = result
+
       if totalRecords > limit and limit != 0
-        if confirm("""
-        There are #{totalRecords} flights for this query.
-        Do you want to load them all?
-        """)
-          return @more(cb, limit=0)
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        data =
+          totalRecords: totalRecords
+          flights: flights
+          callback: cb
+        Blaze.renderWithData Template.gritsConfirmModal, data, $('body')[0]
+        return
 
       if Meteor.gritsUtil.debug
         console.log 'totalRecords: ', totalRecords
@@ -306,7 +309,7 @@ class GritsFilterCriteria
         cb(null, flights)
       # process the flights
       @process(flights)
-    )
+
   # applies the filter; resets loadedRecords, and totalRecords
   #
   # @param [Function] cb, the callback function
