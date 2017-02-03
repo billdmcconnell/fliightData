@@ -82,3 +82,15 @@ template(name='gritsSearch')
         .col.col-xs-5.text-center
           span.status-bar-text {{_ "gritsSearch.total-records" }}
             span.status-bar-val {{ totalRecords }}
+
+template(name='suggestionTemplate')
+  if propertyMatch
+    span #{value}
+  else
+    span.airport-code=raw._id
+    span.airport-info
+      | #{raw.name}
+      if display
+        span.additional-info
+          span #{display}:
+          | #{value}

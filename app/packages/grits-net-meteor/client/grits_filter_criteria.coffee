@@ -248,26 +248,24 @@ class GritsFilterCriteria
   # applies the filter
   #
   # @param [Function] cb, the callback function
-  more: (cb) ->
-    self = this
-
+  more: (cb, limit=3000) ->
     # applying the filter is always EXPLORE mode
     Session.set(GritsConstants.SESSION_KEY_MODE, GritsConstants.MODE_EXPLORE)
 
-    query = self.getQueryObject()
+    query = @getQueryObject()
     if _.isUndefined(query) or _.isEmpty(query)
       toastr.error(i18n.get('toastMessages.departureRequired'))
       Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
       return
 
-    if !query.hasOwnProperty('departureAirport._id')
+    if Object.keys(query).every((k)-> !k.startsWith('departureAirport'))
       toastr.error(i18n.get('toastMessages.departureRequired'))
       Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
       return
 
     # set the state
-    self.setState()
-    self.compareStates()
+    @setState()
+    @compareStates()
 
     # remove the ignoreFields from the query
     _.each(_ignoreFields, (field) ->
@@ -275,76 +273,43 @@ class GritsFilterCriteria
         delete query[field]
     )
 
-    # handle any metaNodes
-    tokens = query['departureAirport._id']['$in']
-    modifiedTokens = []
-    _.each(tokens, (token) ->
-      if (token.indexOf(GritsMetaNode.PREFIX) >= 0)
-        node = GritsMetaNode.find(token)
-        if node == null
-          return
-        if (node.hasOwnProperty('_children'))
-          modifiedTokens = _.union(modifiedTokens, _.pluck(node._children, '_id'))
-      else
-        modifiedTokens = _.union(modifiedTokens, token)
-    )
-    query['departureAirport._id']['$in'] = modifiedTokens
-
     # show the loading indicator and call the server-side method
     Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, true)
-    async.auto({
-      # get the totalRecords count first
-      'getCount': (callback, result) ->
-        Meteor.call('countFlightsByQuery', query, (err, totalRecords) ->
-          if (err)
-            callback(err)
-            return
-
-          if Meteor.gritsUtil.debug
-            console.log 'totalRecords: ', totalRecords
-
-          Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, totalRecords)
-          callback(null, totalRecords)
-        )
-      # when count is finished, get the flights if greater than 0
-      'getFlights': ['getCount', (callback, result) ->
-        totalRecords = result.getCount
-
-        if totalRecords.length <= 0
-          toastr.info(i18n.get('toastMessages.noResults'))
-          Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
-          callback(null)
-          return
-
-        Meteor.call('flightsByQuery', query, (err, flights) ->
-          if (err)
-            callback(err)
-            return
-
-          if _.isUndefined(flights) || flights.length <= 0
-            toastr.info(i18n.get('toastMessages.noResults'))
-            Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
-            callback(null, [])
-            return
-
-          callback(null, flights)
-        )
-      ]
-    }, (err, result) ->
+    Meteor.call 'flightsByQuery', query, limit, (err, result) =>
       if err
         Meteor.gritsUtil.errorHandler(err)
         return
-      # if there hasn't been any errors, getCount and getFlights will
-      # have completed
-      flights = result.getFlights
+      {totalRecords, flights} = result
+
+      if totalRecords > limit and limit != 0
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        data =
+          totalRecords: totalRecords
+          flights: flights
+          callback: cb
+        Blaze.renderWithData Template.gritsConfirmModal, data, $('body')[0]
+        return
+
+      if Meteor.gritsUtil.debug
+        console.log 'totalRecords: ', totalRecords
+
+      Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, totalRecords)
+
+      if totalRecords.length <= 0
+        toastr.info(i18n.get('toastMessages.noResults'))
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        return
+
+      if _.isUndefined(flights) || flights.length <= 0
+        toastr.info(i18n.get('toastMessages.noResults'))
+        Session.set(GritsConstants.SESSION_KEY_IS_UPDATING, false)
+        return
       # call the original callback function if its defined
       if cb && _.isFunction(cb)
         cb(null, flights)
       # process the flights
-      self.process(flights)
-      return
-    )
-    return
+      @process(flights)
+
   # applies the filter; resets loadedRecords, and totalRecords
   #
   # @param [Function] cb, the callback function
@@ -428,7 +393,11 @@ class GritsFilterCriteria
 
     if _.isEqual(date.toISOString(), effectiveDate)
       # the reactive var is already set, change is from the UI
-      self.createOrUpdate('effectiveDate', {key: 'effectiveDate', operator: '$lte', value: effectiveDate})
+      self.createOrUpdate('effectiveDate', {
+        key: 'effectiveDate'
+        operator: '$lte'
+        value: effectiveDate
+      })
     else
       effectiveDatePicker.data('DateTimePicker').date(date)
       self.operatingDateRangeEnd.set(date)
@@ -448,47 +417,74 @@ class GritsFilterCriteria
   # @param [String] code, an airport IATA code
   # @see http://www.iata.org/Pages/airports.aspx
   setDepartures: (code) ->
-    self = this
-
     # do not allow this to run prior to jQuery/DOM
     if _.isUndefined($)
       return
     if _.isUndefined(code)
       throw new Error('A code must be defined or null.')
 
-    if _.isEqual(self.departures.get(), code)
+    if _.isEqual(@departures.get(), code)
       # the call is from the UI
       if _.isNull(code)
-        self.remove('departure')
+        @remove('departure')
         return
       if _.isEmpty(code)
-        self.remove('departure')
+        @remove('departure')
         return
       if _.isArray(code)
-        capsCodes = []
-        for _id in code
-          capsCodes.push _id.toUpperCase()
-        if !_.isEqual(capsCodes, code)
-          Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', capsCodes)
-        self.createOrUpdate('departure', {key: 'departureAirport._id', operator: '$in', value: capsCodes})
+        codes = code
       else
-        self.createOrUpdate('departure', {key: 'departureAirport._id', operator: '$in', value: [code]})
+        codes = [code]
+      departures = []
+
+      # Clear all the property meta-nodes and recreate them.
+      GritsMetaNode.resetPropertyNodes()
+      allNodes = Template.gritsMap.getInstance()
+        .getGritsLayerGroup(GritsConstants.ALL_NODES_GROUP_LAYER_ID)
+        .getNodeLayer().getNodes()
+
+      parsedCodes = _.chain(codes)
+        .map (_id)->
+          if _.contains(_id, ":")
+            [field, value] = _id.split(":")
+            airportIds = _.chain(Meteor.gritsUtil.airports)
+              .map((airport)->
+                if airport[field] == value
+                  [airport._id, true]
+                else
+                  null
+              )
+              .compact()
+              .object()
+              .value()
+            filteredNodes = allNodes.filter (x)->airportIds[x._id]
+            metaNode = GritsMetaNode.create(filteredNodes, _id)
+            return Object.keys(airportIds)
+          else if _id.indexOf(GritsMetaNode.PREFIX) >= 0
+            node = GritsMetaNode.find(_id)
+            return _.pluck(node?._children or [], '_id')
+          else
+            return [_id.toUpperCase()]
+        .flatten()
+        .value()
+      @createOrUpdate('departure', {
+        key: 'departureAirport._id'
+        operator: '$in'
+        value: parsedCodes
+      })
     else
       if _.isNull(code)
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [])
-        self.departures.set([])
-        return
-      if _.isEmpty(code)
+        @departures.set([])
+      else if _.isEmpty(code)
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [])
-        self.departures.set([])
-        return
-      if _.isArray(code)
+        @departures.set([])
+      else if _.isArray(code)
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', code)
-        self.departures.set(code)
+        @departures.set(code)
       else
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [code])
-        self.departures.set([code])
-    return
+        @departures.set([code])
   trackDepartures: () ->
     self = this
     Meteor.autorun ->
@@ -507,23 +503,14 @@ class GritsFilterCriteria
       async.nextTick(() ->
         self.compareStates()
       )
-    return
+
   # returns a unique list of tokens from the search bar
   getOriginIds: () ->
-    self = this
-    return _.chain(self.departures.get())
-      .map (originId)->
-        if originId.startsWith(GritsMetaNode.PREFIX)
-          return GritsMetaNode.find(originId).getAirportIds()
-        else
-          [originId]
-      .flatten()
-      .uniq()
-      .value()
+    query = @getQueryObject()
+    query['departureAirport._id']['$in']
+
   # handle setup of subscription to SimulatedIteneraries and process the results
   processSimulation: (simPas, simId) ->
-    self = this
-
     # get the heatmapLayerGroup
     heatmapLayerGroup = Template.gritsMap.getInstance().getGritsLayerGroup(GritsConstants.HEATMAP_GROUP_LAYER_ID)
     # get the current mode groupLayer
@@ -538,13 +525,12 @@ class GritsFilterCriteria
     # initialize the status-bar counter
     Session.set(GritsConstants.SESSION_KEY_LOADED_RECORDS, loaded)
     # reset the airportCounts
-    self.airportCounts = {}
-
-    originIds = self.getOriginIds()
-    _updateHeatmap = _.throttle(->
+    @airportCounts = {}
+    originIds = @getOriginIds()
+    _updateHeatmap = _.throttle(=>
       Heatmaps.remove({})
       # map the airportCounts object to one with percentage values
-      airportPercentages = _.object([key, val / loaded] for key, val of self.airportCounts)
+      airportPercentages = _.object([key, val / loaded] for key, val of @airportCounts)
       # key the heatmap to the departure airports so it can be filtered
       # out if the query changes.
       airportPercentages._id = originIds.sort().join("")
@@ -556,15 +542,15 @@ class GritsFilterCriteria
       heatmapLayerGroup.draw()
     , 500)
 
-    self.simulationItineraries = Meteor.subscribe('SimulationItineraries', simId)
+    @simulationItineraries = Meteor.subscribe('SimulationItineraries', simId)
     options =
       transform: null
 
-    _doWork = (id, fields) ->
-      if self.airportCounts[fields.destination]
-        self.airportCounts[fields.destination]++
+    _doWork = (id, fields) =>
+      if @airportCounts[fields.destination]
+        @airportCounts[fields.destination]++
       else
-        self.airportCounts[fields.destination] = 1
+        @airportCounts[fields.destination] = 1
       loaded += 1
       layerGroup.convertItineraries(fields, fields.origin)
       # update the simulatorProgress bar
@@ -579,7 +565,7 @@ class GritsFilterCriteria
         _updateHeatmap()
         layerGroup.finish()
         heatmapLayerGroup.finish()
-        self.isSimulatorRunning.set(false)
+        @isSimulatorRunning.set(false)
       else
         _updateHeatmap()
         _throttledDraw()
@@ -599,14 +585,12 @@ class GritsFilterCriteria
 
   # starting a simulation
   startSimulation: (simPas, startDate, endDate) ->
-    self = this
-
-    departures = self.departures.get()
+    departures = @departures.get()
     if departures.length == 0
       toastr.error(i18n.get('toastMessages.departureRequired'))
       return
 
-    if self.isSimulatorRunning.get()
+    if @isSimulatorRunning.get()
       return
 
     # switch mode
@@ -616,9 +600,9 @@ class GritsFilterCriteria
     Template.gritsSearch.simulationProgress.set(1)
 
     # set the simulation as running
-    self.isSimulatorRunning.set(true)
+    @isSimulatorRunning.set(true)
 
-    Meteor.call('startSimulation', simPas, startDate, endDate, self.getOriginIds(), (err, res) ->
+    Meteor.call('startSimulation', simPas, startDate, endDate, @getOriginIds(), (err, res) =>
       # handle any errors
       if err
         Meteor.gritsUtil.errorHandler(err)
@@ -639,8 +623,7 @@ class GritsFilterCriteria
       Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, simPas)
 
       # setup parameters for the subscription to SimulationItineraries
-      self.processSimulation(simPas, res.simId)
-      return
+      @processSimulation(simPas, res.simId)
     )
 
   # reset the start date of the filter

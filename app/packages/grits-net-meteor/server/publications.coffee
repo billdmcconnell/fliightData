@@ -18,6 +18,11 @@ recordProfile = (methodName, elapsedTime) ->
   Profiling.insert({methodName: methodName, elapsedTime: elapsedTime, created: new Date()})
   return
 
+regexEscape = (s)->
+  # Based on bobince's regex escape function.
+  # source: http://stackoverflow.com/questions/3561493/is-there-a-regexp-escape-function-in-javascript/3561711#3561711
+  s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&')
+
 # extends the query object to ensure that all flights are filtered by current
 # dates
 #
@@ -176,7 +181,7 @@ flightsByQuery = (query, limit, skip) ->
     return []
 
   if _.isUndefined(limit)
-    limit = 0
+    limit = 1000
   if _.isUndefined(skip)
     skip = 0
 
@@ -184,92 +189,19 @@ flightsByQuery = (query, limit, skip) ->
   extendQuery(query, null)
 
   matches = []
-  if _useAggregation && _useSeatProjection
-    # prepare the aggregate pipeline
-    pipeline = [
-      # first projection is calculation of weeklyRepeats, required for seatsOverInterval
-      {'$project': {
-          'departureAirport._id': 1,
-          'arrivalAirport._id': 1,
-          'totalSeats': 1,
-          'weeklyFrequency': 1,
-          'effectiveDate':  1,
-          'discontinuedDate': 1,
-          'weeklyRepeats': {
-              '$divide': [
-                {'$subtract': [
-                    {'$cond': [
-                      {'$lt': [
-                        query.effectiveDate.$lte,
-                        '$discontinuedDate'
-                      ]},
-                      query.effectiveDate.$lte,
-                      '$discontinuedDate'
-                    ]},
-                    {'$cond': [
-                      {'$gt': [
-                        query.discontinuedDate.$gte,
-                        '$effectiveDate'
-                      ]},
-                      query.discontinuedDate.$gte,
-                      '$effectiveDate'
-                    ]}
-                  ]
-                },
-                # one week in milliseconds
-                7 * 24 * 60 * 60 * 1000
-              ]
-          }
-        }
-      },
-      # second projection includes the first projection fields plus calculates seatsOverInterval
-      {'$project': {
-          'departureAirport._id': 1,
-          'arrivalAirport._id': 1,
-          'totalSeats': 1,
-          'weeklyFrequency': 1,
-          'effectiveDate':  1,
-          'discontinuedDate': 1,
-          'weeklyRepeats': 1,
-          'seatsOverInterval': {'$multiply': ['$totalSeats', '$weeklyFrequency', '$weeklyRepeats']}
-        }
-      },
-      {'$skip': skip},
-      {'$limit': limit}
-    ]
-    _.each(arrangeQueryKeys(query), (key) ->
-      obj = {$match: {}}
-      value = query[key]
-      obj['$match'][key] = value
-      pipeline.unshift(obj)
-    )
-    matches = Flights.aggregate(pipeline)
-  else
-    matches = Flights.find(query, {limit: limit, skip: skip, transform: null}).fetch()
-    matches = _calculateSeatsOverInterval(matches, query)
-
+  matches = Flights.find(query, {
+    limit: limit
+    skip: skip
+    transform: null
+  }).fetch()
+  totalRecords = Flights.find(query, {transform: null}).count()
+  matches = _calculateSeatsOverInterval(matches, query)
   if _profile
     recordProfile('flightsByQuery', new Date() - start)
-  return matches
-
-# count the total flights for the specified query
-#
-# @param [Object] query, a mongodb query object
-# @return [Integer] totalRecorts, the count of the query
-countFlightsByQuery = (query) ->
-  if _profile
-    start = new Date()
-
-  if _.isUndefined(query) or _.isEmpty(query)
-    return 0
-
-  extendQuery(query)
-
-  count = Flights.find(query, {transform: null}).count()
-
-  if _profile
-    recordProfile('countFlightsByQuery', new Date() - start)
-  return count
+  return {
+    flights: matches
+    totalRecords: totalRecords
+  }
 
 # finds airports that have flights
 #
@@ -406,11 +338,28 @@ typeaheadAirport = (search, skip) ->
 
   matches = _floatMatchingAirport(search, matches)
 
+  propMatches = {}
+  if search.length > 3
+    searchRegExp = new RegExp('^' + regexEscape(search), 'i')
+  else
+    searchRegExp = new RegExp('^' + regexEscape(search) + '$', 'i')
+  for match in matches
+    for prop in ['city', 'countryName', 'stateName']
+      if searchRegExp.test(match[prop])
+        propMatches[prop + '=' + match[prop]] = {
+          _id: match[prop]
+          propertyMatch: prop
+        }
+  matches = _.values(propMatches).concat(matches)
+
+  count = matches.length
   matches = matches.slice(skip, skip + 10)
   if _profile
     recordProfile('typeaheadAirport', new Date() - start)
-  return matches
-
+  return {
+    results: matches
+    count: count
+  }
 # moves the airport with a code matching the search term to the beginning of the
 # returned array
 #
@@ -433,27 +382,6 @@ _floatMatchingAirport = (search, airports) ->
     airports.splice(exactMatchIndex, 1)
     airports = matchElement.concat(airports)
   return airports
-
-# counts the number of airports that match the search
-#
-# @param [String] search, the string to search for matches
-# @return [Integer] count, the number of documents matching the search
-countTypeaheadAirports = (search) ->
-  if _profile
-    start = new Date()
-
-  fields = []
-  for fieldName, matcher of Airport.typeaheadMatcher()
-    field = {}
-    field[fieldName] = {$regex: new RegExp(matcher.regexSearch({search: search}), matcher.regexOptions)}
-    fields.push(field)
-
-  query = { $or: fields }
-  count = Airports.find(query, {transform: null}).count()
-
-  if _profile
-    recordProfile('countTypeaheadAirports', new Date() - start)
-  return count
 
 Meteor.publish 'SimulationItineraries', (simId) ->
   # query options
@@ -483,12 +411,10 @@ findSimulationBySimId = (simId) ->
 Meteor.methods
   startSimulation: startSimulation
   flightsByQuery: flightsByQuery
-  countFlightsByQuery: countFlightsByQuery
   findActiveAirports: findActiveAirports
   findAirportById: findAirportById
   findNearbyAirports: findNearbyAirports
   findMinMaxDateRange: findMinMaxDateRange
   isTestEnvironment: isTestEnvironment
   typeaheadAirport: typeaheadAirport
-  countTypeaheadAirports: countTypeaheadAirports
   findSimulationBySimId: findSimulationBySimId
