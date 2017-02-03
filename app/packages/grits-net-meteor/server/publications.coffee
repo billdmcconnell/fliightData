@@ -338,25 +338,20 @@ typeaheadAirport = (search, skip) ->
 
   matches = _floatMatchingAirport(search, matches)
 
-  propMatches = (prop)->
-    return Airports.aggregate([
-      {
-        $match:
-          "#{prop}":
-            $regex: "^" + regexEscape(search) + "$"
-            $options: 'i'
-      }
-      {
-        $group:
-          _id: "$" + prop
-          propertyMatch:
-            $first: prop
-      }
-    ])
-  matches = propMatches("countryName")
-    .concat(propMatches("stateName"))
-    .concat(propMatches("city"))
-    .concat(matches)
+  propMatches = {}
+  if search.length > 3
+    searchRegExp = new RegExp('^' + regexEscape(search), 'i')
+  else
+    searchRegExp = new RegExp('^' + regexEscape(search) + '$', 'i')
+  for match in matches
+    for prop in ['city', 'countryName', 'stateName']
+      if searchRegExp.test(match[prop])
+        propMatches[prop + '=' + match[prop]] = {
+          _id: match[prop]
+          propertyMatch: prop
+        }
+  matches = _.values(propMatches).concat(matches)
+
   count = matches.length
   matches = matches.slice(skip, skip + 10)
   if _profile
