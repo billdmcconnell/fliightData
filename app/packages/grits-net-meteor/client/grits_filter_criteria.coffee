@@ -316,6 +316,7 @@ class GritsFilterCriteria
   apply: (cb) ->
     self = this
     # allow the reactive var to be set before continue
+    @resetLayerGroup()
     async.nextTick(() ->
       # reset the loadedRecords and totalRecords
       Session.set(GritsConstants.SESSION_KEY_LOADED_RECORDS, 0)
@@ -329,6 +330,14 @@ class GritsFilterCriteria
         self.more()
     )
     return
+
+  resetLayerGroup: ->
+    layerGroup = GritsLayerGroup.getCurrentLayerGroup()
+    # clears the sub-layers and resets the layer group
+    if layerGroup
+      layerGroup.reset()
+
+
   # sets the 'start' date from the filter and updates the filter criteria
   #
   # @param [Object] date, Date object or null to clear the criteria
@@ -495,14 +504,10 @@ class GritsFilterCriteria
         if !(_.isUndefined(Template.gritsMap) || _.isUndefined(Template.gritsMap.getInstance))
           map = Template.gritsMap.getInstance()
           if !_.isNull(map)
-            layerGroup = GritsLayerGroup.getCurrentLayerGroup()
-            # clears the sub-layers and resets the layer group
-            if layerGroup != null
-              layerGroup.reset()
+            self.resetLayerGroup()
       self.setDepartures(obj)
-      async.nextTick(() ->
+      async.nextTick () ->
         self.compareStates()
-      )
 
   # returns a unique list of tokens from the search bar
   getOriginIds: () ->
