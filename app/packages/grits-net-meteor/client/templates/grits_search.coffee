@@ -15,22 +15,16 @@ _simulationProgress = new ReactiveVar(0)
 # not allow us to pass in a custom context to the footer.  <%= obj.query %> and
 # <%= obj.isEmpty %> are the only things available.
 _typeaheadFooter = _.template('
-  <div class="airport-footer">
-    <div class="row">
-      <div class="col-xs-6 pull-middle">
-        <span id="suggestionCount"></span>
-      </div>
-      <div class="col-xs-6 pull-middle">
-        <ul class="pager">
-          <li class="previous-suggestions">
-            <a href="#" id="previousSuggestions">Previous</a>
-          </li>
-          <li class="next-suggestions">
-            <a href="#" id="forwardSuggestions">Forward</a>
-          </li>
-        </ul>
-      </div>
-    </div>
+  <div class="tt-footer airport-footer">
+    <span id="suggestionCount"></span>
+    <ul class="pager">
+      <li class="previous-suggestions">
+        <a href="#" id="previousSuggestions" class="btn btn-default">Previous</a>
+      </li>
+      <li class="next-suggestions">
+        <a href="#" id="forwardSuggestions" class="btn btn-default">Next</a>
+      </li>
+    </ul>
   </div>')
 
 # returns the typeahead object for the '#departureSearchMain' input
@@ -157,9 +151,9 @@ _suggestionGenerator = (query, skip, callback) ->
     if count > 1
       if (_matchSkip + 10) > count
         diff = (_matchSkip + 10) - count
-        $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+(10-diff)} of #{count}</span>")
+        $('#suggestionCount').html("<span>#{_matchSkip+1}-#{_matchSkip+(10-diff)} of #{count}</span>")
       else
-        $('#suggestionCount').html("<span>Matches #{_matchSkip+1}-#{_matchSkip+10} of #{count}</span>")
+        $('#suggestionCount').html("<span>#{_matchSkip+1}-#{_matchSkip+10} of #{count}</span>")
     else if count == 1
       $('#suggestionCount').html("<span>#{count} match found</span>")
     else
@@ -530,12 +524,11 @@ Template.gritsSearch.events
     $target = $(e.target)
     $container = $target.closest('.tokenized')
     #the typeahead menu should be as wide as the filter at a minimum
-    $menu = $container.find('.tt-dropdown-menu')
-    $menu.css('max-width', $('.tokenized.main').width())
     id = $target.attr('id')
-    $container.find('.tt-dropdown-menu').css('z-index', 999999)
-    $container.find('.token-input.tt-input').css('height', '30px')
-    $container.find('.token-input.tt-input').css('font-size', '20px')
+    topPosition = $container.offset().top + $container.outerHeight() + 1
+    $container.find('.tt-dropdown-menu').css
+      bottom: 0
+      top: topPosition
     $container.find('.tokenized.main').prepend($("#searchIcon"))
     $('#' + id + '-tokenfield').on('blur', (e) ->
       # only allow tokens
