@@ -1,0 +1,107 @@
+#searchIcon
+  verticallyCenter()
+  left 10px
+  font-size 1.4em
+  color $blue
+
+.tt-input
+  min-height 30px
+
+.tt-dropdown-menu
+  position fixed !important
+  width $sidebar-width
+  margin 0
+  padding 0
+  border-radius 0
+  border 0
+  box-shadow none
+  z-index 999999
+  background alpha(white, .95)
+
+.tt-suggestions
+  flex 1 1 300px
+  overflow auto
+
+.tt-suggestion
+  display flex
+  align-items flex-start
+  padding 5px 10px
+  border-bottom 1px solid #f9f9f9
+  &:last-child
+    border-bottom 0
+
+.tt-suggestion
+.tt-suggestion
+  strong
+    color #000
+  &.tt-cursor
+  &.tt-is-under-cursor
+    background $primary
+    color white
+    cursor pointer
+    &.airport-name
+      color white
+      color #555
+    strong
+    span
+      color white
+
+[class^='tt-dataset']
+  height 100%
+  display flex
+  flex-direction column
+
+.tt-footer
+  flex 0 0 auto
+  margin-top auto
+  position static
+  color #666
+  font-size 95%
+  padding 10px
+  display flex
+  align-items center
+  border-top 1px solid $l-gray
+
+  .pager
+    margin 0 0 0 auto
+    display flex
+    li
+      &:first-of-type
+        margin-right .5em
+      a
+        letter-spacing .03em
+        font-size 1em
+        padding 5px 15px
+        border-radius 4px
+        border-color darken($l-gray, 5%)
+        &:hover
+          border-color @border-color
+      &:not(.disabled)
+        a
+          color $primary
+          &:hover
+            background lighten($primary, 95%)
+            border-color darken(@background, 40%)
+            color $primary-d
+          &:active
+            box-shadow none
+            background lighten($primary, 80%)
+
+.airport-code
+  min-width 15%
+  font-size 115%
+  font-weight bold
+  font-weight 800
+  color #666
+
+.airport-info
+  color #666
+  font-size 95%
+  margin-top .15em
+  .additional-info
+    display block
+    font-size 85%
+    color #999
+    font-style italic
+  > span
+    text-transform capitalize

@@ -10,6 +10,8 @@
 @import 'overlay.import'
 @import 'layers.import'
 
+@import 'typeahead.import'
+
 body
 html
 #grits-map
@@ -294,58 +296,6 @@ p.intro
   border-bottom 1px solid $blue
   font-size 1em
 
-
-#searchIcon
-  verticallyCenter()
-  left 10px
-  font-size 1.4em
-  color $blue
-
-.twitter-typeahead
-  position static !important // Overides typeahead's inline styling
-
-.tt-dropdown-menu
-  border-top-left-radius 0
-  border-top-right-radius 0
-  border 0
-  height 635px
-  overflow-y auto
-  overflow-x hidden
-
-.airport-code
-  position absolute
-  left 10px
-  top 5px
-  min-width 15%
-  font-size 115%
-  font-weight bold
-  font-weight 800
-  color #666
-
-.airport-info
-  color #666
-  font-size 95%
-  .additional-info
-    display block
-    font-size 85%
-    color #999
-    font-style italic
-  > span
-    text-transform capitalize
-
-.airport-footer
-  color #666
-  font-size 95%
-  margin 2px 0 2px 15px
-
-.pull-middle
-  display table-cell
-  vertical-align middle
-  float none
-
-.pager
-  display inline
-
 .slider.slider-horizontal
   width 225px
   cursor pointer
@@ -388,23 +338,6 @@ p.intro
 .slider-selection
   background-image none
   background-color rgba(51, 122, 183, 0.25)
-
-.tt-suggestion
-  position relative
-  padding 5px 10px 5px 20%
-  border-bottom 1px solid #f9f9f9
-  &:last-child
-    border-bottom 0
-
-.tt-suggestion
-.tt-suggestion
-  &.tt-cursor
-  &.tt-is-under-cursor
-    background lighten(#DDD, 10%)
-    &.airport-name
-      color #555
-  strong
-    color #000
 
 #loadMore
   margin-right 0px
@@ -492,10 +425,6 @@ p.intro
   height 20px
   border-radius 50%
 
-.airport-footer
-  position absolute
-  bottom 0px
-
 .sidebar-tabs > li:hover
   color #333
 
@@ -528,10 +457,6 @@ p.intro
 
 .action-menu span
   font-size smaller
-
-.pager li > a, .pager li > span
-  padding 5px 5px
-  border-radius 8px
 
 canvas
   z-index -1
