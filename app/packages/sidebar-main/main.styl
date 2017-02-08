@@ -19,11 +19,12 @@
 .searchBar
   border-top 0
   .form-control
+    transition background .5s ease-in-out
     &:focus
     &.focus
       outline 0
       box-shadow none
-      background $ll-gray
+      background alpha(lighten($primary, 90%), 80%)
 
 #mode-toggle
   display flex
