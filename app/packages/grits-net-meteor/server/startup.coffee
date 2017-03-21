@@ -1,3 +1,5 @@
+fs = Npm.require('fs');
+
 _warmupMongoFlights = (done) ->
   query = {"departureAirport._id":{"$in":["BOS"]}}
   console.log('warmup flights')
@@ -50,6 +52,32 @@ _ensureIndexes = (done) ->
     loc: '2dsphere'
   done()
 
+fixAirportLocations = () ->
+  syncReadFile = Meteor.wrapAsync(fs.readFile)
+  syncReadFile process.env.PWD + '/data/errorports.csv', 'utf8', (err, data) ->
+    if err
+      console.log "Error reading csv", err
+      return
+    rows = data.split('\n')
+    for row in rows
+      columns = row.split(',')
+      airportCode = columns[0]
+      airport = Airports.findOne({_id: airportCode})
+      api_key = '84d572528e84d94f59e429867dbd1bed'
+      url =  "https://api.opencagedata.com/geocode/v1/json?q=#{airport.loc.coordinates[1]}%2C#{airport.loc.coordinates[0]}&pretty=1&key=" + api_key;
+      response = Meteor.http.call("GET", url)
+      responseObject = JSON.parse(response.content)
+      locationData = JSON.parse(response.content).results[0].components
+      Airports.update airportCode, {
+        $set: {
+          city: locationData.local_administrative_area || locationData.town || locationData.village || locationData.suburb,
+          country: locationData.country_code,
+          countryName: locationData.country,
+          stateName: locationData.state,
+          globalRegion: null
+        }
+      }
+
 warmupMongo = () ->
   start = new Date()
   console.log('starting warmup')
@@ -74,5 +102,6 @@ Meteor.startup ->
     if res == false
       warmupMongo()
   )
+  fixAirportLocations()
   # setup i18n
   i18n.addLanguage('en', 'English')
