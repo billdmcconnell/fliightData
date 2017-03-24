@@ -58,7 +58,9 @@ _throttleTablesChanged = _.throttle(->
 
 Template.gritsDataTable.events({
   'click #disaggregate': (event, template) ->
-    template.disaggregate.set(true)
+    originAirports = template.paths.get()[0].origin._children
+    GritsFilterCriteria.setDepartures( _.map originAirports, (a) -> a._id )
+    GritsFilterCriteria.apply()
   'click .share-btn': (event, template) ->
     # toggle the display of the share-link-container
     $('.share-link-container').slideToggle('fast')
@@ -89,8 +91,6 @@ Template.gritsDataTable.events({
 })
 
 Template.gritsDataTable.helpers({
-  getOrigin: (n) ->
-    if Template.instance().disaggregate.get() then n.metadata.departureAirport._id else n.origin._id
   getCurrentURL: () ->
     return FlowRouter.currentURL.get()
   getNodeName: (n) ->

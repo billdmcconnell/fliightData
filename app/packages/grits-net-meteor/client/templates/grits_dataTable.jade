@@ -29,7 +29,7 @@ template(name='gritsDataTable')
               with paths
                 each paths
                   tr.pathTableRow(data-id='{{this._id}}')
-                    td          {{getOrigin this}}
+                    td          {{this.origin._id}}
                     td.dtHidden {{getNodeName this.origin}}
                     td.dtHidden {{getNodeCity this.origin}}
                     td.dtHidden {{getNodeState this.origin}}
