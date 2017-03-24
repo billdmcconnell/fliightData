@@ -1,15 +1,12 @@
 template(name='gritsSearch')
-  style.
-    .bootstrap-datetimepicker-widget table td.day {
-      width: 28px;
-    }
   .filter
     #departureSearchMainSearchBar.searchBar
       .tokenized.main
         i#searchIcon.fa.fa-search
         input#departureSearchMain.input-sm.advanced-filter-status(
           name='departureSearchMain'
-          placeholder='{{_ "gritsSearch.tokenfield-placeholder"}}')
+          placeholder='{{_ "gritsSearch.tokenfield-placeholder"}}'
+          autofocus)
     .filter-wrapper
       .filter-row.nearby
         input#includeNearbyAirports(type='checkbox', name='includeNearbyAirports')

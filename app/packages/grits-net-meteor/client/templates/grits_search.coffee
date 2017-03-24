@@ -306,10 +306,14 @@ Template.gritsSearch.onRendered ->
   # set the original state of the filter on document ready
   GritsFilterCriteria.setState()
 
+  Meteor.setTimeout =>
+    @$('.tt-input').focus()
+  , 500
+
   # When the template is rendered, setup a Tracker autorun to listen to changes
   # on isUpdating.  This session reactive var enables/disables, shows/hides the
   # apply button and filterLoading indicator.
-  Meteor.autorun ->
+  @autorun ->
     # update the disabled status of the [More] button based loadedRecords
     loadedRecords = Session.get(GritsConstants.SESSION_KEY_LOADED_RECORDS)
     totalRecords = Session.get(GritsConstants.SESSION_KEY_TOTAL_RECORDS)
@@ -320,7 +324,7 @@ Template.gritsSearch.onRendered ->
       # disable the [More] button
       $('#loadMore').prop('disabled', true)
 
-  Meteor.autorun ->
+  @autorun ->
     # update the ajax-loader
     isUpdating = Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)
     # do not show the filter spinner if the overlay isLoading
@@ -331,7 +335,7 @@ Template.gritsSearch.onRendered ->
       $('#applyFilter').prop('disabled', false)
       Session.set 'filtering', false
 
-  Meteor.autorun ->
+  @autorun ->
     mode = Session.get(GritsConstants.SESSION_KEY_MODE)
     # do not run if our mode hasn't changed
     if self.mode == mode
@@ -346,7 +350,7 @@ Template.gritsSearch.onRendered ->
       async.nextTick(-> $('#simulatedPassengersInputSlider').slider())
     self.mode = mode
 
-  Meteor.autorun (c) ->
+  @autorun (c) ->
     departures = GritsFilterCriteria.departures.get()
     if departures.length == 0
       _resetSimulationProgress()
@@ -356,7 +360,7 @@ Template.gritsSearch.onRendered ->
 
   # Determine if the router set a simId
   # @see lib/router.coffee
-  Meteor.autorun (c) ->
+  @autorun (c) ->
     simId = Session.get(GritsConstants.SESSION_KEY_SHARED_SIMID)
     if _.isUndefined(simId)
       return
