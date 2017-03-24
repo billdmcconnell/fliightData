@@ -5,6 +5,8 @@ template(name='gritsDataTable')
         a#pathTab(href='#paths', data-toggle='tab')
           {{_ "gritsDataTable.explore.title"}}
           +helpLink helpTemplate='helpDirectFlights' showTitle=true classNames='inline'
+      li
+        button#disaggregate Disaggregate!
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
@@ -27,7 +29,7 @@ template(name='gritsDataTable')
               with paths
                 each paths
                   tr.pathTableRow(data-id='{{this._id}}')
-                    td          {{this.origin._id}}
+                    td          {{getOrigin this}}
                     td.dtHidden {{getNodeName this.origin}}
                     td.dtHidden {{getNodeCity this.origin}}
                     td.dtHidden {{getNodeState this.origin}}
