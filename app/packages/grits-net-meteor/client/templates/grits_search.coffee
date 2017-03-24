@@ -393,8 +393,6 @@ Template.gritsSearch.onRendered ->
       Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, simPas)
       # Process the existing simulation
       GritsFilterCriteria.processSimulation(simPas, simulation.get('simId'))
-      # Do not rerun initSharedSim
-      c.stop()
 
 _changeSimulatedPassengersHandler = (e) ->
   val = parseInt($("#simulatedPassengersInputSlider").val(), 10)
