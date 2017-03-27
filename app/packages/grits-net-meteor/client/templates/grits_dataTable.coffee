@@ -193,7 +193,6 @@ Template.gritsDataTable.onCreated ->
   this.startDate = new ReactiveVar(null)
   this.endDate = new ReactiveVar(null)
   this.departures = new ReactiveVar([])
-  this.disaggregate = new ReactiveVar(false)
 
   this._reset = () ->
     this.paths.set([])
@@ -201,7 +200,6 @@ Template.gritsDataTable.onCreated ->
     this.startDate.set('')
     this.endDate.set('')
     this.departures.set([])
-    this.disaggregate.set(false)
     _simId.set(null)
     _tablesChanged.set(true)
 
