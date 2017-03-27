@@ -5,8 +5,8 @@ template(name='gritsDataTable')
         a#pathTab(href='#paths', data-toggle='tab')
           {{_ "gritsDataTable.explore.title"}}
           +helpLink helpTemplate='helpDirectFlights' showTitle=true classNames='inline'
-      li
-        button#disaggregate Disaggregate!
+    .sidebar-table--options
+      button#disaggregate.btn.btn-default.btn-sm Disaggregate
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
