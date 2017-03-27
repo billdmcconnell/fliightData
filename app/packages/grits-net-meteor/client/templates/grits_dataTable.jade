@@ -6,7 +6,8 @@ template(name='gritsDataTable')
           {{_ "gritsDataTable.explore.title"}}
           +helpLink helpTemplate='helpDirectFlights' showTitle=true classNames='inline'
     .sidebar-table--options
-      button#disaggregate.btn.btn-default.btn-sm Disaggregate
+      button#disaggregate.btn.btn-default.btn-sm(
+        disabled="{{#unless resultsIncludeMetaNode}} true {{/unless}}") Show Individual Origins
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
