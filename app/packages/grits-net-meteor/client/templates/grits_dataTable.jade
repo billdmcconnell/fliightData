@@ -27,25 +27,25 @@ template(name='gritsDataTable')
                 th          {{_ "gritsDataTable.explore.col3-heading"}}
                 th          {{_ "gritsDataTable.explore.col4-heading"}}
             tbody
-              with paths
-                each paths
-                  tr.pathTableRow(data-id='{{this._id}}')
-                    td          {{this.origin._id}}
-                    td.dtHidden {{getNodeName this.origin}}
-                    td.dtHidden {{getNodeCity this.origin}}
-                    td.dtHidden {{getNodeState this.origin}}
-                    td.dtHidden {{getNodeCountry this.origin}}
-                    td          {{this.destination._id}}
-                    td.dtHidden {{getNodeName this.destination}}
-                    td.dtHidden {{getNodeCity this.destination}}
-                    td.dtHidden {{getNodeState this.destination}}
-                    td.dtHidden {{getNodeCountry this.destination}}
-                    td          {{this.occurrences}}
-                    td          {{this.throughput}}
-                      .circle(style='background-color: {{getPathThroughputColor this}}')
-              tr
-                td(colspan='12')
-                  span(style='font-style: italic;') No data
+              each paths
+                tr.pathTableRow(data-id='{{this._id}}')
+                  td          {{this.origin._id}}
+                  td.dtHidden {{getNodeName this.origin}}
+                  td.dtHidden {{getNodeCity this.origin}}
+                  td.dtHidden {{getNodeState this.origin}}
+                  td.dtHidden {{getNodeCountry this.origin}}
+                  td          {{this.destination._id}}
+                  td.dtHidden {{getNodeName this.destination}}
+                  td.dtHidden {{getNodeCity this.destination}}
+                  td.dtHidden {{getNodeState this.destination}}
+                  td.dtHidden {{getNodeCountry this.destination}}
+                  td          {{this.occurrences}}
+                  td          {{this.throughput}}
+                    .circle(style='background-color: {{getPathThroughputColor this}}')
+              else
+                tr
+                  td(colspan='12')
+                    span(style='font-style: italic;') No data
 
   if isAnalyzeMode
     ul.nav.nav-tabs.table-tabs
@@ -77,16 +77,15 @@ template(name='gritsDataTable')
                 span.progress-font= simulationProgress
             .datatable-heading.datatable-row Origins
             .datatable-hr
-              with departures
-                each departures
-                  .datatable-row
-                    .col.col-xs-2
-                      span.airport-code= this._id
-                    .col.col-xs-10
-                      .datatable-row
-                        span.airport-info= this.name
-                      .datatable-row
-                        span.additional-info {{getAdditionalInfo this}}
+              each departures
+                .datatable-row
+                  .col.col-xs-2
+                    span.airport-code= this._id
+                  .col.col-xs-10
+                    .datatable-row
+                      span.airport-info= this.name
+                    .datatable-row
+                      span.additional-info {{getAdditionalInfo this}}
               else
                 .datatable-row
                   .col.col-xs-12
@@ -108,15 +107,15 @@ template(name='gritsDataTable')
                 th {{_ "gritsDataTable.analyze.col2-heading"}}
                 th {{_ "gritsDataTable.analyze.col3-heading"}}
             tbody
-              with paths
-                each paths
-                  tr.pathTableRow(data-id= this._id)
-                    td= this.origin._id
-                    td= this.destination._id
-                    td= this.occurrences
-              tr
-                td(colspan='3')
-                  span(style='font-style: italic;') No data
+              each paths
+                tr.pathTableRow(data-id= this._id)
+                  td= this.origin._id
+                  td= this.destination._id
+                  td= this.occurrences
+              else
+                tr
+                  td(colspan='3')
+                    span(style='font-style: italic;') No data
 
   .sidebarRightFooter
     .export
