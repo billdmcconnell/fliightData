@@ -8,7 +8,7 @@ template(name='gritsDataTable')
     .sidebar-table--options
       button#disaggregate.btn.btn-default.btn-sm(
         disabled="{{#unless resultsIncludeMetaNode}} true {{/unless}}") Show Individual Origins
-      input#filter(type='text' placeholder='Filter Results')
+      input#filter.filter.form-control(type='text' placeholder='Filter Results')
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
@@ -45,8 +45,8 @@ template(name='gritsDataTable')
                     .circle(style='background-color: {{getPathThroughputColor this}}')
               else
                 tr
-                  td(colspan='12')
-                    span(style='font-style: italic;') No data
+                  td.no-results(colspan='12')
+                    span No data
 
   if isAnalyzeMode
     ul.nav.nav-tabs.table-tabs
@@ -89,8 +89,8 @@ template(name='gritsDataTable')
                       span.additional-info {{getAdditionalInfo this}}
               else
                 .datatable-row
-                  .col.col-xs-12
-                    span(style='font-style: italic;') No data
+                  .col.col-xs-12.no-results
+                    span No data
 
             .datatable-heading.datatable-row Details
             .datatable-hr
@@ -115,8 +115,8 @@ template(name='gritsDataTable')
                   td= this.occurrences
               else
                 tr
-                  td(colspan='3')
-                    span(style='font-style: italic;') No data
+                  td.no-results(colspan='3')
+                    span No data
 
   .sidebarRightFooter
     .export
