@@ -186,6 +186,7 @@ Template.gritsDataTable.helpers
 
   paths: ->
     paths = Template.instance().paths.get()
+    console.log paths
     text = Template.instance().filterText.get()
     if text
         text = text.toLowerCase()
