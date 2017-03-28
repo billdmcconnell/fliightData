@@ -8,7 +8,7 @@ template(name='gritsDataTable')
     .sidebar-table--options
       button#disaggregate.btn.btn-default.btn-sm(
         disabled="{{#unless resultsIncludeMetaNode}} true {{/unless}}") Show Individual Origins
-      input#filter(type='text')
+      input#filter(type='text' placeholder='Filter Results')
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
