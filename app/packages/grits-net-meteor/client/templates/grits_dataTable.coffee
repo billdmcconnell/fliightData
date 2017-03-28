@@ -64,6 +64,10 @@ Template.gritsDataTable.events
     event.target.blur()
     instance.resultsIncludeMetaNode.set(false)
 
+  'keyup #filter': (event, template) ->
+    text = event.currentTarget.value
+    template.filterText.set(text)
+
   'click .share-btn': (event, instance) ->
     # toggle the display of the share-link-container
     $('.share-link-container').slideToggle('fast')
@@ -181,7 +185,15 @@ Template.gritsDataTable.helpers
     Template.instance().departures.get()
 
   paths: ->
-    Template.instance().paths.get()
+    paths = Template.instance().paths.get()
+    text = Template.instance().filterText.get()
+    if text
+        text = text.toLowerCase()
+        paths = _.map paths, (path) ->
+          if path.origin._id.toLowerCase().indexOf(text) < 0 and path.destination._id.toLowerCase().indexOf(text) < 0
+            path.hidden = true
+          path
+    paths
 
   getPathThroughputColor: (path) ->
     if _.isUndefined(path)
@@ -202,8 +214,9 @@ Template.gritsDataTable.onCreated ->
   @endDate = new ReactiveVar(null)
   @departures = new ReactiveVar([])
   @resultsIncludeMetaNode = new ReactiveVar(false)
+  @filterText = new ReactiveVar(null)
 
-  @_reset = () ->
+  @_reset = () =>
     @paths.set([])
     @simPas.set(0)
     @startDate.set('')
@@ -211,6 +224,7 @@ Template.gritsDataTable.onCreated ->
     @departures.set([])
     _simId.set(null)
     _tablesChanged.set(true)
+    filterText.set(null)
 
   # Public API
   Template.gritsDataTable.highlightPathTableRow = highlightPathTableRow

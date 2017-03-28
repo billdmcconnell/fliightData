@@ -8,6 +8,7 @@ template(name='gritsDataTable')
     .sidebar-table--options
       button#disaggregate.btn.btn-default.btn-sm(
         disabled="{{#unless resultsIncludeMetaNode}} true {{/unless}}") Show Individual Origins
+      input#filter(type='text')
     .tab-content.dataTableContent
       #paths.tab-pane.active
         .pathsTableContainer
@@ -28,7 +29,7 @@ template(name='gritsDataTable')
                 th          {{_ "gritsDataTable.explore.col4-heading"}}
             tbody
               each paths
-                tr.pathTableRow(data-id='{{this._id}}')
+                tr.pathTableRow(data-id='{{this._id}}' data-tableexport-display='always' class='{{#if this.hidden}} hidden {{/if}}')
                   td          {{this.origin._id}}
                   td.dtHidden {{getNodeName this.origin}}
                   td.dtHidden {{getNodeCity this.origin}}
