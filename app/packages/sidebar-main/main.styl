@@ -55,8 +55,17 @@
   font-size 1.2em !important
 
 .tokenized
+  max-height 200px
+  overflow-x scroll
   &.main
     max-width 100%
+  pre
+    display none
+
+.btn
+  &.btn-default
+    &[disabled]
+      color $m-gray
 
 .btn-confirm
 .btn-filter

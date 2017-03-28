@@ -56,17 +56,25 @@ _throttleTablesChanged = _.throttle(->
   _tablesChanged.set(false)
 , 250)
 
-Template.gritsDataTable.events({
-  'click .share-btn': (event, template) ->
+Template.gritsDataTable.events
+  'click #disaggregate': (event, instance) ->
+    originAirports = instance.paths.get()[0].origin._children
+    GritsFilterCriteria.setDepartures( _.map originAirports, (a) -> a._id )
+    GritsFilterCriteria.apply()
+    event.target.blur()
+    instance.resultsIncludeMetaNode.set(false)
+
+  'click .share-btn': (event, instance) ->
     # toggle the display of the share-link-container
     $('.share-link-container').slideToggle('fast')
     return
-  'click .pathTableRow': (event, template) ->
+
+  'click .pathTableRow': (event, instance) ->
     # get the clicked row
     $row = $(event.currentTarget)
-    # find the path from template.paths using the DOM's id
+    # find the path from instance.paths using the DOM's id
     _id = $row.data('id')
-    paths = template.paths.get()
+    paths = instance.paths.get()
     path = _.find(paths, (path) -> path._id == _id)
     if _.isUndefined(path)
       return
@@ -76,6 +84,7 @@ Template.gritsDataTable.events({
     # simulate a click on the path
     path.eventHandlers.click(element)
     return
+
   'click .exportData': (event) ->
     $('.dtHidden').show()
     fileType = $(event.currentTarget).attr("data-type")
@@ -84,18 +93,20 @@ Template.gritsDataTable.events({
       activeTable.tableExport({type: fileType})
     $('.dtHidden').hide()
     return
-})
 
-Template.gritsDataTable.helpers({
+Template.gritsDataTable.helpers
   getCurrentURL: () ->
     return FlowRouter.currentURL.get()
+
   getNodeName: (n) ->
     if _.isUndefined(n)
       return
     if n instanceof GritsMetaNode
+      Template.instance().resultsIncludeMetaNode.set(true)
       return n._id
     node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
     return node.name
+
   getNodeCity: (n) ->
     if _.isUndefined(n)
       return
@@ -103,6 +114,7 @@ Template.gritsDataTable.helpers({
       return 'N/A'
     node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
     return node.city
+
   getNodeState: (n) ->
     if _.isUndefined(n)
       return
@@ -110,6 +122,7 @@ Template.gritsDataTable.helpers({
       return 'N/A'
     node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
     return node.state
+
   getNodeCountry: (n) ->
     if _.isUndefined(n)
       return
@@ -117,9 +130,11 @@ Template.gritsDataTable.helpers({
       return 'N/A'
     node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
     return node.countryName
+
   simulationProgress: () ->
     progress = Template.gritsSearch.simulationProgress.get() + '%'
     return _updateSimulationProgress(progress)
+
   getAdditionalInfo: (airport) ->
     additionalInfo = ''
     if airport.hasOwnProperty('city') && airport.city != ''
@@ -129,6 +144,7 @@ Template.gritsDataTable.helpers({
     if airport.hasOwnProperty('countryName') && airport.countryName != ''
       additionalInfo += ', ' + airport.countryName
     return additionalInfo
+
   isExploreMode: () ->
     mode = Session.get(GritsConstants.SESSION_KEY_MODE)
     if _.isUndefined(mode)
@@ -138,6 +154,7 @@ Template.gritsDataTable.helpers({
         return true
       else
         return false
+
   isAnalyzeMode: () ->
     mode = Session.get(GritsConstants.SESSION_KEY_MODE)
     if _.isUndefined(mode)
@@ -147,55 +164,51 @@ Template.gritsDataTable.helpers({
         return true
       else
         return false
-  simPas: () ->
+
+  simPas: ->
     if _.isUndefined(Template.instance().simPas)
       return 0
     else
       return Template.instance().simPas.get()
-  startDate: () ->
-    if _.isUndefined(Template.instance().startDate)
-      return ''
-    else
-      return Template.instance().startDate.get()
-  endDate: () ->
-    if _.isUndefined(Template.instance().endDate)
-      return ''
-    else
-      return Template.instance().endDate.get()
-  departures: () ->
-    if _.isUndefined(Template.instance().departures)
-      return []
-    else
-      return Template.instance().departures.get()
-  paths: () ->
-    if _.isUndefined(Template.instance().paths)
-      return []
-    else
-      paths = Template.instance().paths.get()
-      return Template.instance().paths.get()
+
+  startDate: ->
+    return Template.instance().startDate.get()
+
+  endDate: ->
+    Template.instance().endDate.get()
+
+  departures: ->
+    Template.instance().departures.get()
+
+  paths: ->
+    Template.instance().paths.get()
+
   getPathThroughputColor: (path) ->
     if _.isUndefined(path)
       return ''
     layerGroup = GritsLayerGroup.getCurrentLayerGroup()
     return layerGroup.getPathLayer()._getNormalizedColor(path)
-})
+
+  resultsIncludeMetaNode: ->
+    Template.instance().resultsIncludeMetaNode.get()
 
 Template.gritsDataTable.onCreated ->
   # initialize reactive-var to hold reference to the paths, nodes, and heatmap data
-  this.paths = new ReactiveVar([])
-  this.heatmaps = new ReactiveVar([])
-  this.simId = null
-  this.simPas = new ReactiveVar(null)
-  this.startDate = new ReactiveVar(null)
-  this.endDate = new ReactiveVar(null)
-  this.departures = new ReactiveVar([])
+  @paths = new ReactiveVar([])
+  @heatmaps = new ReactiveVar([])
+  @simId = null
+  @simPas = new ReactiveVar(null)
+  @startDate = new ReactiveVar(null)
+  @endDate = new ReactiveVar(null)
+  @departures = new ReactiveVar([])
+  @resultsIncludeMetaNode = new ReactiveVar(false)
 
-  this._reset = () ->
-    this.paths.set([])
-    this.simPas.set(0)
-    this.startDate.set('')
-    this.endDate.set('')
-    this.departures.set([])
+  @_reset = () ->
+    @paths.set([])
+    @simPas.set(0)
+    @startDate.set('')
+    @endDate.set('')
+    @departures.set([])
     _simId.set(null)
     _tablesChanged.set(true)
 
@@ -259,6 +272,7 @@ Template.gritsDataTable.onRendered ->
     _previousMode = mode
 
   Meteor.autorun ->
+    self.resultsIncludeMetaNode.set(false)
     departures = GritsFilterCriteria.departures.get()
     # clear the datatable if departures == 0
     if departures.length == 0
