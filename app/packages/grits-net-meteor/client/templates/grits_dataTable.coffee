@@ -186,14 +186,16 @@ Template.gritsDataTable.helpers
 
   paths: ->
     paths = Template.instance().paths.get()
-    console.log paths
     text = Template.instance().filterText.get()
     if text
-        text = text.toLowerCase()
-        paths = _.map paths, (path) ->
-          if path.origin._id.toLowerCase().indexOf(text) < 0 and path.destination._id.toLowerCase().indexOf(text) < 0
-            path.hidden = true
-          path
+      text = text.toLowerCase()
+      paths = _.map paths, (path) ->
+        path.hidden = path.origin._id.toLowerCase().indexOf(text) < 0 and path.destination._id.toLowerCase().indexOf(text) < 0
+        path
+    else
+      paths = _.map paths, (path) -> 
+        path.hidden = false
+        path
     paths
 
   getPathThroughputColor: (path) ->
@@ -225,7 +227,7 @@ Template.gritsDataTable.onCreated ->
     @departures.set([])
     _simId.set(null)
     _tablesChanged.set(true)
-    filterText.set(null)
+    @filterText.set(null)
 
   # Public API
   Template.gritsDataTable.highlightPathTableRow = highlightPathTableRow
