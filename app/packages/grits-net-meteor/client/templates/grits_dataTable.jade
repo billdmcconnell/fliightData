@@ -32,8 +32,8 @@ template(name='gritsDataTable')
                 tr.pathTableRow(data-id='{{this._id}}' data-tableexport-display='always' class='{{#if this.hidden}} hidden {{/if}}')
                   td          {{this.origin._id}}
                   td.dtHidden {{getNodeName this.origin}}
-                  td.dtHidden {{getNodeCity this.origin}}
-                  td.dtHidden {{getNodeState this.origin}}
+                  td.dtHidden {{getNodeCity this}}
+                  td.dtHidden {{getNodeState this}}
                   td.dtHidden {{getNodeCountry this.origin}}
                   td          {{this.destination._id}}
                   td.dtHidden {{getNodeName this.destination}}
