@@ -31,6 +31,16 @@ highlightPathTableRow = (path) ->
     _previousPath = null
   return
 
+lookupAirport = (n) ->
+  lookup = null
+  if n instanceof GritsPath
+    lookup = n.metadata.departureAirport._id
+  else
+    lookup = n._id
+  node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == lookup)
+  return node
+
+
 # update the simulationProgress bar
 _updateSimulationProgress = (progress) ->
   $('.simulation-progress').css({width: progress})
@@ -105,34 +115,25 @@ Template.gritsDataTable.helpers
   getNodeName: (n) ->
     if _.isUndefined(n)
       return
-    if n instanceof GritsMetaNode
-      Template.instance().resultsIncludeMetaNode.set(true)
-      return n._id
-    node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
+    node = lookupAirport(n)
     return node.name
 
   getNodeCity: (n) ->
     if _.isUndefined(n)
       return
-    if n instanceof GritsMetaNode
-      return 'N/A'
-    node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
+    node = lookupAirport(n)
     return node.city
 
   getNodeState: (n) ->
     if _.isUndefined(n)
       return
-    if n instanceof GritsMetaNode
-      return 'N/A'
-    node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
+    node = lookupAirport(n)
     return node.state
 
   getNodeCountry: (n) ->
     if _.isUndefined(n)
       return
-    if n instanceof GritsMetaNode
-      return 'N/A'
-    node = _.find(Meteor.gritsUtil.airports, (node) -> node._id == n._id)
+    node = lookupAirport(n)
     return node.countryName
 
   simulationProgress: () ->
