@@ -153,10 +153,19 @@ _calculateSeatsOverInterval = (flights, query) ->
     # determine which days are valid and increment the multiplier
     else
       if rangeDays > 0
-        validDays = {1: flight.day1, 2: flight.day2, 3: flight.day3, 4: flight.day4, 5: flight.day5, 6: flight.day6, 7: flight.day7}
+        validDays = [
+          flight.day7
+          flight.day1
+          flight.day2
+          flight.day3
+          flight.day4
+          flight.day5
+          flight.day6
+        ]
         multiplier = 0
         # iterate over the range of days, if valid increment the multiplier
         range.by('days', (d) ->
+          console.assert(not _.isUndefined(validDays[d.day()]))
           if validDays[d.day()]
             multiplier++
         )
