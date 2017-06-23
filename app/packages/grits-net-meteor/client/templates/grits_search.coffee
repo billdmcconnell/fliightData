@@ -10,6 +10,7 @@ _effectiveDatePicker = null # onRendered will set this to a datetime picker obje
 _discontinuedDatePicker = null # onRendered will set this to a datetime picker object
 _matchSkip = null # the amount to skip during typeahead pagination
 _simulationProgress = new ReactiveVar(0)
+@notify = new ReactiveVar(false)
 
 # Unfortunately we need to result to jQuery as twitter's typeahead plugin does
 # not allow us to pass in a custom context to the footer.  <%= obj.query %> and
@@ -243,6 +244,9 @@ Template.gritsSearch.helpers
   end: ->
     _initEndDate
 
+  showNotify: =>
+    @notify.get()
+
 Template.gritsSearch.onCreated ->
   _initStartDate = GritsFilterCriteria.initStart()
   _initEndDate = GritsFilterCriteria.initEnd()
@@ -431,7 +435,8 @@ _startSimulation = (e) ->
   simPas = parseInt($('#simulatedPassengersInputSlider').slider('getValue'), 10)
   startDate = _discontinuedDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
   endDate = _effectiveDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
-  GritsFilterCriteria.startSimulation(simPas, startDate, endDate)
+  email = if $('#notify').prop('checked') then $('#notifyEmail').val() else null
+  GritsFilterCriteria.startSimulation(simPas, startDate, endDate, email)
 
 _showThroughput = (e) ->
   departures = GritsFilterCriteria.departures.get()
@@ -457,6 +462,9 @@ Template.gritsSearch.events
   'click #startSimulation': _startSimulation
 
   'click #showThroughput': _showThroughput
+
+  'click #notify': (event, template) =>
+    @notify.set(event.target.checked)
 
   'change #departureSearchMain': _changeDepartureHandler
 

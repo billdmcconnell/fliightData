@@ -60,6 +60,13 @@ template(name='gritsSearch')
 
       if isAnalyzeMode
         .filter-row
+          | Notify me when simulation completes
+          input#notify(type="checkbox")
+        if showNotify
+          .filter-row
+            | Enter email below:
+            input#notifyEmail
+        .filter-row
           button#startSimulation.btn.btn-filter {{_ "gritsSearch.startSimulationButton" }}
         .filter-row
           .progress(style='margin-top: 5px; height: 10px;')
