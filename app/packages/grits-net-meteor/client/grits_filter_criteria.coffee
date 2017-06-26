@@ -494,6 +494,7 @@ class GritsFilterCriteria
       else
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [code])
         @departures.set([code])
+
   trackDepartures: () ->
     self = this
     Meteor.autorun ->
@@ -531,6 +532,7 @@ class GritsFilterCriteria
     Session.set(GritsConstants.SESSION_KEY_LOADED_RECORDS, loaded)
     # reset the airportCounts
     @airportCounts = {}
+    @trackDepartures()
     originIds = @getOriginIds()
     _updateHeatmap = _.throttle(=>
       Heatmaps.remove({})
