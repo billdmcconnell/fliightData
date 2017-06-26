@@ -436,6 +436,8 @@ _startSimulation = (e) ->
   startDate = _discontinuedDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
   endDate = _effectiveDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
   email = if $('#notify').prop('checked') then $('#notifyEmail').val() else null
+  if email
+    localStorage?.setItem('notifyEmail', email)
   GritsFilterCriteria.startSimulation(simPas, startDate, endDate, email)
 
 _showThroughput = (e) ->
@@ -466,7 +468,7 @@ Template.gritsSearch.events
   'click #notify': (event, template) =>
     @notify.set(event.target.checked)
     Meteor.defer ->
-      $('#notifyEmail').focus()
+      $('#notifyEmail').focus().val(localStorage?.notifyEmail or '')
 
   'change #departureSearchMain': _changeDepartureHandler
 
