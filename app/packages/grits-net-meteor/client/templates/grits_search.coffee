@@ -465,6 +465,8 @@ Template.gritsSearch.events
 
   'click #notify': (event, template) =>
     @notify.set(event.target.checked)
+    Meteor.defer ->
+      $('#notifyEmail').focus()
 
   'change #departureSearchMain': _changeDepartureHandler
 
