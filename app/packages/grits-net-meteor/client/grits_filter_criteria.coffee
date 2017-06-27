@@ -494,6 +494,7 @@ class GritsFilterCriteria
       else
         Template.gritsSearch.getDepartureSearchMain().tokenfield('setTokens', [code])
         @departures.set([code])
+
   trackDepartures: () ->
     self = this
     Meteor.autorun ->
@@ -531,6 +532,7 @@ class GritsFilterCriteria
     Session.set(GritsConstants.SESSION_KEY_LOADED_RECORDS, loaded)
     # reset the airportCounts
     @airportCounts = {}
+    @trackDepartures()
     originIds = @getOriginIds()
     _updateHeatmap = _.throttle(=>
       Heatmaps.remove({})
@@ -589,7 +591,7 @@ class GritsFilterCriteria
     return
 
   # starting a simulation
-  startSimulation: (simPas, startDate, endDate) ->
+  startSimulation: (simPas, startDate, endDate, email) ->
     departures = @departures.get()
     if departures.length == 0
       toastr.error(i18n.get('toastMessages.departureRequired'))
@@ -606,8 +608,7 @@ class GritsFilterCriteria
 
     # set the simulation as running
     @isSimulatorRunning.set(true)
-
-    Meteor.call('startSimulation', simPas, startDate, endDate, @getOriginIds(), (err, res) =>
+    Meteor.call('startSimulation', simPas, startDate, endDate, @getOriginIds(), email, (err, res) =>
       # handle any errors
       if err
         Meteor.gritsUtil.errorHandler(err)
@@ -620,7 +621,6 @@ class GritsFilterCriteria
 
       # set the reactive var on the template
       Template.gritsDataTable.simId.set(res.simId)
-
       # update the url
       FlowRouter.go('/simulation/'+res.simId)
 

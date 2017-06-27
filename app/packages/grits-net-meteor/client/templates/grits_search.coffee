@@ -243,7 +243,11 @@ Template.gritsSearch.helpers
   end: ->
     _initEndDate
 
+  showNotify: ->
+    Template.instance().notify.get()
+
 Template.gritsSearch.onCreated ->
+  @notify = new ReactiveVar(false)
   _initStartDate = GritsFilterCriteria.initStart()
   _initEndDate = GritsFilterCriteria.initEnd()
   _init = false # done initializing initial input values
@@ -431,7 +435,10 @@ _startSimulation = (e) ->
   simPas = parseInt($('#simulatedPassengersInputSlider').slider('getValue'), 10)
   startDate = _discontinuedDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
   endDate = _effectiveDatePicker.data('DateTimePicker').date().format('DD/MM/YYYY')
-  GritsFilterCriteria.startSimulation(simPas, startDate, endDate)
+  email = if $('#notify').prop('checked') then $('#notifyEmail').val() else null
+  if email
+    localStorage?.setItem('notifyEmail', email)
+  GritsFilterCriteria.startSimulation(simPas, startDate, endDate, email)
 
 _showThroughput = (e) ->
   departures = GritsFilterCriteria.departures.get()
@@ -457,6 +464,11 @@ Template.gritsSearch.events
   'click #startSimulation': _startSimulation
 
   'click #showThroughput': _showThroughput
+
+  'click #notify': (event, template) ->
+    Template.instance().notify.set(event.target.checked)
+    Meteor.defer ->
+      $('#notifyEmail').focus().val(localStorage?.notifyEmail or '')
 
   'change #departureSearchMain': _changeDepartureHandler
 

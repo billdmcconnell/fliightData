@@ -31,7 +31,7 @@ template(name='gritsSearch')
               span.glyphicon.glyphicon-calendar
 
       if isAnalyzeMode
-        .filter-row(style='margin-top: 20px; margin-bottom: 20px;')
+        .filter-row.number-of-passengers
           .pull-left
             span.filter-label {{_ "gritsSearch.simulated-passengers-label"}}
           .pull-right.sliderValIndicator
@@ -47,8 +47,7 @@ template(name='gritsSearch')
                 data-slider-value='1000'
                 data-slider-orientation='horizontal'
                 data-slider-selection='before'
-                data-slider-tooltip='show'
-                style='position:relative; top:0; left:0; width:100%;')
+                data-slider-tooltip='show')
           .slider-range-labels.clearfix
             .pull-left.sliderRangeIndicatorLeft 0
             .pull-right.sliderRangeIndicatorRight 20,000
@@ -60,9 +59,16 @@ template(name='gritsSearch')
 
       if isAnalyzeMode
         .filter-row
+          label.checkbox-inline.email-label
+            input#notify(type="checkbox")
+            | Notify me when simulation completes
+        if showNotify
+          .filter-row
+            input#notifyEmail.form-control(placeholder="Email Address")
+        .filter-row
           button#startSimulation.btn.btn-filter {{_ "gritsSearch.startSimulationButton" }}
         .filter-row
-          .progress(style='margin-top: 5px; height: 10px;')
+          .progress
             .simulation-progress.progress-bar.progress-bar-success(
               role='progressbar'
               aria-valuenow='0'

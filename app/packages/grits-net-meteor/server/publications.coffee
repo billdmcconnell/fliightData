@@ -232,25 +232,30 @@ findAirportById = (id) ->
     return []
   return Airports.findOne({'_id': id})
 
-startSimulation = (simPas, startDate, endDate, origins) ->
+startSimulation = (simPas, startDate, endDate, origins, email) ->
   console.log ("DEBUG: Flight Sim Url: " + _FLIRT_SIMULATOR_URL)
   console.log ("DEBUG: simPas: " + simPas)
   console.log ("DEBUG: startDate: " + startDate)
   console.log ("DEBUG: endDate: " + endDate)
   console.log ("DEBUG: origins: " + origins)
+  console.log ("DEBUG: email: " + email)
 
-  future = new Future();
-  HTTP.post(_FLIRT_SIMULATOR_URL, {
-    params: {
+  params = {
       submittedBy: 'robo@noreply.io',
       startDate: startDate,
       endDate: endDate,
       departureNodes: origins,
       numberPassengers: simPas
     }
+
+  if email
+    params.notificationEmail = email
+  future = new Future();
+  HTTP.post(_FLIRT_SIMULATOR_URL, {
+    params: params
   }, (err, res) ->
     if err
-      console.log ("ERROR: " + json.stringify(err) )
+      console.log ("ERROR: " + JSON.stringify(err) )
       future.throw(err)
       return
     console.log( "NO ERROR" )

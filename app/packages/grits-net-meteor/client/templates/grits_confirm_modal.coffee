@@ -13,3 +13,6 @@ Template.gritsConfirmModal.events
   'click .load-all': (event, instance) ->
     GritsFilterCriteria.more(instance.data.callback, 0)
     instance.$('.confirm--modal').modal('hide')
+
+  # 'click .notify': (event, instance) ->
+  #   $('.notify-slider').slideToggle()
