@@ -10,7 +10,6 @@ _effectiveDatePicker = null # onRendered will set this to a datetime picker obje
 _discontinuedDatePicker = null # onRendered will set this to a datetime picker object
 _matchSkip = null # the amount to skip during typeahead pagination
 _simulationProgress = new ReactiveVar(0)
-@notify = new ReactiveVar(false)
 
 # Unfortunately we need to result to jQuery as twitter's typeahead plugin does
 # not allow us to pass in a custom context to the footer.  <%= obj.query %> and
@@ -244,10 +243,12 @@ Template.gritsSearch.helpers
   end: ->
     _initEndDate
 
-  showNotify: =>
-    @notify.get()
+  showNotify: ->
+    Template.instance().notify.get()
 
 Template.gritsSearch.onCreated ->
+  self = Template.instance()
+  self.notify = new ReactiveVar(false)
   _initStartDate = GritsFilterCriteria.initStart()
   _initEndDate = GritsFilterCriteria.initEnd()
   _init = false # done initializing initial input values
@@ -465,8 +466,8 @@ Template.gritsSearch.events
 
   'click #showThroughput': _showThroughput
 
-  'click #notify': (event, template) =>
-    @notify.set(event.target.checked)
+  'click #notify': (event, template) ->
+    Template.instance().notify.set(event.target.checked)
     Meteor.defer ->
       $('#notifyEmail').focus().val(localStorage?.notifyEmail or '')
 
