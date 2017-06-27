@@ -247,8 +247,7 @@ Template.gritsSearch.helpers
     Template.instance().notify.get()
 
 Template.gritsSearch.onCreated ->
-  self = Template.instance()
-  self.notify = new ReactiveVar(false)
+  @notify = new ReactiveVar(false)
   _initStartDate = GritsFilterCriteria.initStart()
   _initEndDate = GritsFilterCriteria.initEnd()
   _init = false # done initializing initial input values
