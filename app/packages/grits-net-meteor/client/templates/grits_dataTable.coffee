@@ -116,7 +116,7 @@ Template.gritsDataTable.helpers
     if _.isUndefined(n)
       return
     node = lookupAirport(n)
-    return node.name
+    return node?.name
 
   getNodeCity: (n) ->
     if _.isUndefined(n)
@@ -134,7 +134,7 @@ Template.gritsDataTable.helpers
     if _.isUndefined(n)
       return
     node = lookupAirport(n)
-    return node.countryName
+    return node?.countryName
 
   simulationProgress: () ->
     progress = Template.gritsSearch.simulationProgress.get() + '%'
