@@ -246,6 +246,9 @@ Template.gritsSearch.helpers
   showNotify: ->
     Template.instance().notify.get()
 
+  notBSVE: ->
+    return !window.location.href.match(/bsve/i)
+
 Template.gritsSearch.onCreated ->
   @notify = new ReactiveVar(false)
   _initStartDate = GritsFilterCriteria.initStart()

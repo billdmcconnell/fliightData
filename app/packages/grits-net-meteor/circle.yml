@@ -7,7 +7,7 @@ machine:
 # Add some environment variables
   environment:
     PACKAGE_DIRS: "/home/ubuntu"
-    MONGO_URL: "mongodb://127.0.0.1:27017/grits-net-meteor"
+    MONGO_URL: "mongodb://127.0.0.1:27017/flirt"
     FLIRT_SIMULATOR_URL: "http://127.0.0.1:45000/simulator"
 
 checkout:
