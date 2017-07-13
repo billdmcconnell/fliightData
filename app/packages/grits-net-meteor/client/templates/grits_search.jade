@@ -58,10 +58,11 @@ template(name='gritsSearch')
         +helpLink helpTemplate='helpDirectFlights' showTitle=true classNames='block'
 
       if isAnalyzeMode
-        .filter-row
-          label.checkbox-inline.email-label
-            input#notify(type="checkbox")
-            | Notify me when simulation completes
+        if notBSVE
+          .filter-row
+            label.checkbox-inline.email-label
+              input#notify(type="checkbox")
+              | Notify me when simulation completes
         if showNotify
           .filter-row
             input#notifyEmail.form-control(placeholder="Email Address")
