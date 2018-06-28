@@ -621,14 +621,11 @@ class GritsFilterCriteria
 
       # set the reactive var on the template
       Template.gritsDataTable.simId.set(res.simId)
-      # update the url
+      # update the url, this will trigger processing of the simulation.
       FlowRouter.go('/simulation/'+res.simId)
 
       # set the status-bar total counter
       Session.set(GritsConstants.SESSION_KEY_TOTAL_RECORDS, simPas)
-
-      # setup parameters for the subscription to SimulationItineraries
-      @processSimulation(simPas, res.simId)
     )
 
   # reset the start date of the filter

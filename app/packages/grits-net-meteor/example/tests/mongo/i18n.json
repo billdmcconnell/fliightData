@@ -5,7 +5,7 @@
 { "_id" : "gZBHNr2C6KHd5pGaA" , "key" : "gritsDataTable.tab-1.title" , "en" : [ "Flights"]}
 { "_id" : "qCyKpBCdR6eRBNeM9" , "key" : "gritsDataTable.tab-1.origin-heading" , "en" : [ "Origin"]}
 { "_id" : "MYkF74kDFaSTjgdXs" , "key" : "gritsDataTable.tab-1.destination-heading" , "en" : [ "Destination"]}
-{ "_id" : "K2iwuj8iTxRHsckJc" , "key" : "gritsDataTable.tab-1.occurances-heading" , "en" : [ "Occurrences"]}
+{ "_id" : "K2iwuj8iTxRHsckJc" , "key" : "gritsDataTable.tab-1.occurrences-heading" , "en" : [ "Occurrences"]}
 { "_id" : "pvEFTD8m9MH2yQEk3" , "key" : "gritsDataTable.tab-1.throughput-heading" , "en" : [ "Total Seats"]}
 { "_id" : "X6FkGudixbav4EtdA" , "key" : "gritsDataTable.tab-2.title" , "en" : [ "Airports"]}
 { "_id" : "wiZwQvP3GNNkBELbn" , "key" : "gritsDataTable.tab-2.code-heading" , "en" : [ "Code"]}
