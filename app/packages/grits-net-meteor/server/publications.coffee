@@ -113,6 +113,7 @@ _calculateSeatsOverInterval = (flights, query) ->
   _.each(flights, (flight) ->
     # the default is 0, which represents a single date range
     flight.seatsOverInterval = 0
+    flight.flightsOverInterval = 0
 
     flightEffectiveDate = moment.utc(flight.effectiveDate)
     flightDiscontinuedDate = moment.utc(flight.discontinuedDate)
@@ -150,7 +151,8 @@ _calculateSeatsOverInterval = (flights, query) ->
     if flight.weeklyFrequency == 7
       if rangeDays > 0
         flight.seatsOverInterval = flight.totalSeats * rangeDays
-    # determine which days are valid and increment the multiplier
+        flight.flightsOverInterval = rangeDays
+    # determine which days are valid and increment flightsOverInterval
     else
       if rangeDays > 0
         validDays = [
@@ -162,15 +164,16 @@ _calculateSeatsOverInterval = (flights, query) ->
           flight.day5
           flight.day6
         ]
-        multiplier = 0
-        # iterate over the range of days, if valid increment the multiplier
+        flightsOverInterval = 0
+        # iterate over the range of days, if valid increment the flightsOverInterval
         range.by('days', (d) ->
           console.assert(not _.isUndefined(validDays[d.day()]))
           if validDays[d.day()]
-            multiplier++
+            flightsOverInterval++
         )
-        if multiplier > 0
-          flight.seatsOverInterval = flight.totalSeats * multiplier
+        flight.flightsOverInterval = flightsOverInterval
+        if flightsOverInterval > 0
+          flight.seatsOverInterval = flight.totalSeats * flightsOverInterval
         else
           flight.seatsOverInterval = flight.totalSeats
   )

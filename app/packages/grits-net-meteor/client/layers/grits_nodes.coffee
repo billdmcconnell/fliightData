@@ -1,8 +1,5 @@
 _previousNode = new ReactiveVar(null) # placeholder for a previously selected node
 _eventHandlers = {
-  mouseover: (element, selection, projection) ->
-    if not Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)
-      _previousNode.set(this)
   click: (element, selection, projection) ->
     self = this
     if not Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)

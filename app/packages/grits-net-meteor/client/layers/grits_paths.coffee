@@ -306,7 +306,7 @@ class GritsPathLayer extends GritsLayer
         return
     else
       path.level = level
-      path.occurrences += 1
+      path.occurrences += flight.flightsOverInterval
       path.sumThroughput(flight)
     return
 

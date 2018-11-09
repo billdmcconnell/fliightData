@@ -1,13 +1,4 @@
 _eventHandlers = {
-  mouseover: (element, selection, projection) ->
-    self = this
-    map = Template.gritsMap.getInstance()
-    layerGroup = GritsLayerGroup.getCurrentLayerGroup()
-    nodeLayer = layerGroup.getNodeLayer()
-    if not Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)
-      # set nodeLayer previous/current node
-      nodeLayer.currentNode.set(self)
-
   click: (element, selection, projection) ->
     self = this
     if not Session.get(GritsConstants.SESSION_KEY_IS_UPDATING)
